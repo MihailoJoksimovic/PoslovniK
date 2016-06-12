@@ -36,6 +36,8 @@ var Router = Backbone.Router.extend({
       
       this.currentView.remove();
       
+      // TODO: Display view based on user's permission level
+      
       var view = new Poslovnik.AdminDashboard();
       
       view.$el.appendTo('#content');
