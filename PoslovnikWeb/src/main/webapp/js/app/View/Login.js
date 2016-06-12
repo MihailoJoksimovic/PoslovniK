@@ -9,8 +9,6 @@ Poslovnik.Login = Backbone.View.extend({
         this.render();
         
         this.person = Poslovnik.Person;
-        
-        this.listenTo(this.person, 'login_status_changed', this.onLoginStatusChanged);
     },
     
     render: function() {
@@ -26,6 +24,8 @@ Poslovnik.Login = Backbone.View.extend({
 
         person.set('email', this.$el.find('#email').val());
         person.set('password', this.$el.find('#password').val());
+        
+        this.listenToOnce(this.person, 'login_status_changed', this.onLoginStatusChanged);
         
         person.logIn();
     },

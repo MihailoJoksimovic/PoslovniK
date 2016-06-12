@@ -8,6 +8,12 @@ var Router = Backbone.Router.extend({
   
   currentView: new Backbone.View(),
   
+  initialize: function() {
+      var navbarView = new Poslovnik.Navbar({
+          el: $('#top-navbar')
+      });
+  },
+  
   home: function() {
       this.currentView.remove();
       

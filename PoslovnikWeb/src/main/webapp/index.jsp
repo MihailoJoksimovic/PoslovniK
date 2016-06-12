@@ -17,7 +17,7 @@
         
     </head>
     <body>
-        <nav class="navbar navbar-default">
+        <nav class="navbar navbar-default" id="top-navbar">
             <div class="container-fluid">
               <!-- Brand and toggle get grouped for better mobile display -->
               <div class="navbar-header">
@@ -30,10 +30,9 @@
                 <a class="navbar-brand" href="#">PoslovniK</a>
               </div>
 
-              <!-- Collect the nav links, forms, and other content for toggling -->
-              <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                
-              </div><!-- /.navbar-collapse -->
+              <ul class="nav navbar-nav navbar-right">
+                <li><a href="javascript: void(0)" id="log-out-link">Log out</a></li>
+              </ul>
             </div><!-- /.container-fluid -->
       </nav>
     
@@ -55,6 +54,7 @@
     <script type="text/javascript" src="js/app/View/Home.js"></script>
     <script type="text/javascript" src="js/app/View/Login.js"></script>
     <script type="text/javascript" src="js/app/View/AdminDashboard.js"></script>
+    <script type="text/javascript" src="js/app/View/Navbar.js"></script>
     <script type="text/javascript" src="js/app/router.js"></script>
     <script type="text/javascript" src="js/app/bootstrap.js"></script>
     </body>

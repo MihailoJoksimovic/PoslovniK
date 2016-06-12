@@ -31,14 +31,17 @@ public class PersonDAO {
     
     public boolean checkExistence(EntityManager em, Person person) throws Exception {
         try {
-            Query query = em.createQuery("SELECT id FROM Person WHERE email = :email AND password = :password");
+            Query query = em.createQuery("SELECT p FROM Person p WHERE p.email = :email AND p.password = :password");
             
             query.setParameter("email", person.getEmail());
             query.setParameter("password", person.getPassword());
             
-            Integer id = (Integer) query.getSingleResult();
+            Person p = (Person) query.getSingleResult();
             
-            person.setId(id);
+            person.setId(p.getId());
+            person.setEmail(p.getEmail());
+            person.setFirstName(p.getFirstName());
+            person.setPermissionLevel(p.getPermissionLevel());
             
             return true;
         } catch (NoResultException ex) {

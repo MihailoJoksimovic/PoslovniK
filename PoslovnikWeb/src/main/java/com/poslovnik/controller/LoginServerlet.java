@@ -10,6 +10,7 @@ import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.data.Person;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
@@ -44,8 +45,6 @@ public class LoginServerlet extends HttpServlet {
         
         response.setContentType("application/json");
         response.sendError(400, "Bad request");
-
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -60,7 +59,25 @@ public class LoginServerlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        response.setContentType("application/json");
+        
+        Person p = (Person) request.getSession().getAttribute("person");
+        
+        if (p == null) {
+            json.put("success", false);
+            json.put("message", "You are not logged in");
+            
+            
+            response.getWriter().print(json.toString());
+            
+            return;
+        }
+        
+        json.put("success", true);
+        json.put("userData", convertUserDataToHashmap(p));
+        
+        response.getWriter().println(json.toString());
     }
 
     /**
@@ -85,7 +102,9 @@ public class LoginServerlet extends HttpServlet {
             
             response.setStatus(200);
             
-            json.put("id", p.getId());
+            json.put("userData", convertUserDataToHashmap(p));
+
+            request.getSession().setAttribute("person", p);
         } catch (Exception ex) {
             Logger.getLogger(LoginServerlet.class.getName()).log(Level.SEVERE, null, ex);
             
@@ -96,8 +115,6 @@ public class LoginServerlet extends HttpServlet {
         
         json.put("success", success);
         
-        request.getSession().setAttribute("person", p);
-        
         response.getWriter().println(json.toString());
     }
     
@@ -107,6 +124,18 @@ public class LoginServerlet extends HttpServlet {
         p.setPassword(request.getParameter("password"));
         
         return p;
+    }
+    
+    private HashMap<String,String> convertUserDataToHashmap(Person p)
+    {
+        HashMap<String,String> userData = new HashMap();
+            
+        userData.put("id", p.getId().toString());
+        userData.put("email", p.getEmail());
+        userData.put("first_name", p.getFirstName());
+        userData.put("permission_level", Short.toString(p.getPermissionLevel()));
+        
+        return userData;
     }
 
     /**
