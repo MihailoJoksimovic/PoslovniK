@@ -2,8 +2,9 @@
  * Bootstraps PoslovniK web app :)
  */
 
-Poslovnik = {};
+Poslovnik.Router = new Router();
 
-Poslovnik.router = new Router();
+
+Poslovnik.Person = new Poslovnik.PersonModel();
 
 Backbone.history.start();

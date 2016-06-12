@@ -17,14 +17,17 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONObject;
+
 
 /**
  *
  * @author mixa
  */
-@WebServlet(name = "LoginServerlet", urlPatterns = {"/LoginServerlet"})
+@WebServlet(name = "LoginServerlet", urlPatterns = {"/login"})
 public class LoginServerlet extends HttpServlet {
-
+    JSONObject json = new JSONObject();
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -36,15 +39,11 @@ public class LoginServerlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
         
-        try {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("Not implemented!");
-        } finally {
-            out.close();
-        }
+        response.setContentType("application/json");
+        response.sendError(400, "Bad request");
+
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -73,7 +72,26 @@ public class LoginServerlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        response.setContentType("application/json");
+        
+        Person p = createPerson(request);
+        
+        response.setStatus(200);
+        
+        json.put("success", true);
+        
+        request.getSession().setAttribute("person", p);
+        
+        response.getWriter().println(json.toString());
+    }
+    
+    private Person createPerson(HttpServletRequest request) {
+        Person p = new Person();
+        p.setEmail(request.getParameter("email"));
+        p.setPassword(request.getParameter("password"));
+        
+        return p;
     }
 
     /**
@@ -83,7 +101,7 @@ public class LoginServerlet extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Processes log in requests";
     }// </editor-fold>
 
 }
