@@ -9,6 +9,7 @@ import com.poslovnik.model.data.Person;
 import com.sun.xml.internal.ws.util.Constants;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -47,6 +48,11 @@ public class PersonDAO {
         } catch (NoResultException ex) {
             return false;
         }
+    }
+    
+    public List<Person> findAll(EntityManager em) {
+        Query query = em.createQuery("SELECT p FROM Person p");
+        return query.getResultList();
     }
         
 }
