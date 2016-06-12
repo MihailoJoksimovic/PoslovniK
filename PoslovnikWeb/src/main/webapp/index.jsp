@@ -42,7 +42,11 @@
     </div>
     
     <script type="text/template" id="tpl-login">
-    <%@include  file="pages/login.html" %>
+        <%@include  file="pages/login.html" %>
+    </script>
+    
+    <script type="text/template" id="tpl-admin-dashboard">
+        <%@include  file="pages/admin_dashboard.html" %>
     </script>
     
     <script>Poslovnik = {};</script>
@@ -50,6 +54,7 @@
     <script type="text/javascript" src="js/app/Model/Person.js"></script>
     <script type="text/javascript" src="js/app/View/Home.js"></script>
     <script type="text/javascript" src="js/app/View/Login.js"></script>
+    <script type="text/javascript" src="js/app/View/AdminDashboard.js"></script>
     <script type="text/javascript" src="js/app/router.js"></script>
     <script type="text/javascript" src="js/app/bootstrap.js"></script>
     </body>

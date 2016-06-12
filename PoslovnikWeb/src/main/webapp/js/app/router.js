@@ -10,9 +10,9 @@ var Router = Backbone.Router.extend({
   
   home: function() {
       // For starters, just display the log in page
-      var view = new Poslovnik.Login({
-          el: $('#content')
-      });
+      var view = new Poslovnik.Login();
+      
+      view.$el.appendTo('#content');
       
       this.currentView = view;
   },
@@ -28,7 +28,11 @@ var Router = Backbone.Router.extend({
       
       this.currentView.remove();
       
-      console.log("Welcome to dashboard");
+      var view = new Poslovnik.AdminDashboard();
+      
+      view.$el.appendTo('#content');
+      
+      this.currentView = view;
   }
 
 

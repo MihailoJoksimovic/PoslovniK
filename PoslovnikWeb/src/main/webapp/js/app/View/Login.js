@@ -17,6 +17,8 @@ Poslovnik.Login = Backbone.View.extend({
         var tpl = _.template($('#tpl-login').html());
         
         this.$el.html(tpl);
+        
+        return this;
     },
     
     onLogInBtnClicked: function() {
