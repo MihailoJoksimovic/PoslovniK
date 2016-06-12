@@ -33,9 +33,15 @@ Poslovnik.Login = Backbone.View.extend({
     onLoginStatusChanged: function() {
         var person = this.person;
         
+        this.$el.find('#form-group').removeClass('has-error');
+        
         if (person.isLoggedIn()) {
             Poslovnik.Router.navigate('dashboard', {trigger: true});
+            
+            return;
         }
+        
+        this.$el.find('#form-group').addClass('has-error');
     }
    
 });

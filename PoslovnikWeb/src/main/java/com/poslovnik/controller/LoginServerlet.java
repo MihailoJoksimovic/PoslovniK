@@ -10,6 +10,8 @@ import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.data.Person;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.servlet.ServletException;
@@ -77,9 +79,22 @@ public class LoginServerlet extends HttpServlet {
         
         Person p = createPerson(request);
         
-        response.setStatus(200);
+        Boolean success = false;
+        try {
+            success = PersonDAO.getInstance().checkExistence(EntityManagerWrapper.getEntityManager(), p);
+            
+            response.setStatus(200);
+            
+            json.put("id", p.getId());
+        } catch (Exception ex) {
+            Logger.getLogger(LoginServerlet.class.getName()).log(Level.SEVERE, null, ex);
+            
+            success = false;
+            
+            response.setStatus(400);
+        }
         
-        json.put("success", true);
+        json.put("success", success);
         
         request.getSession().setAttribute("person", p);
         

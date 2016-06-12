@@ -9,6 +9,8 @@ var Router = Backbone.Router.extend({
   currentView: new Backbone.View(),
   
   home: function() {
+      this.currentView.remove();
+      
       // For starters, just display the log in page
       var view = new Poslovnik.Login();
       
