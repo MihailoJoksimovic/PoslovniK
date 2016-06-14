@@ -7,11 +7,14 @@ package com.poslovnik.controller;
 
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PersonDAO;
-import com.poslovnik.model.dao.PositionDAO;
-import com.poslovnik.model.data.Position;
+import com.poslovnik.model.data.Person;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,39 +27,9 @@ import org.json.JSONObject;
  *
  * @author mixa
  */
-public class PositionServerlet extends HttpServlet {
-
+public class PersonServlet extends HttpServlet {
     JSONObject json = new JSONObject();
-    
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        try {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet PositionServerlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet PositionServerlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        } finally {
-            out.close();
-        }
-    }
-
+  
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -69,7 +42,6 @@ public class PositionServerlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
         String action = request.getParameter("action");
         TipAkcije tip = TipAkcije.getForAction(action);
         
@@ -96,25 +68,75 @@ public class PositionServerlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        
+        String action = request.getParameter("action");
+        TipAkcije tip = TipAkcije.getForAction(action);
+        
+        switch (tip) {
+            case DELETE: {
+                Person p = createPerson(request, tip);
+                deleteAction(request, response, p);
+                break;
+            }
+            default:
+                throw new ServletException("Unknown action requested!");
+        }
+        
+        response.getWriter().print(json.toString());
     }
-
+    
     private void listAction(HttpServletRequest request, HttpServletResponse response) {
         EntityManager em = EntityManagerWrapper.getEntityManager();
 
-        List<Position> positionList = PositionDAO.getInstance().findAll(em);
+        List<Person> personList = PersonDAO.getInstance().findAll(em);
         
         JSONArray jsonArr = new JSONArray();
         
-        for (Position p : positionList) {
+        for (Person p : personList) {
             JSONObject jsonObj = new JSONObject();
             
             jsonObj.put("id", p.getId());
-            jsonObj.put("name", p.getName());
+            jsonObj.put("email", p.getEmail());
+            jsonObj.put("first_name", p.getFirstName());
+            jsonObj.put("last_name", p.getLastName());
+            jsonObj.put("title", p.getTitle());
+            jsonObj.put("permission_level", p.getPermissionLevel());
+            jsonObj.put("position_name", p.getPosition().getName());
             
             jsonArr.put(jsonObj);
         }
         
         json.put("data", jsonArr);
     }
+
+    private void deleteAction(HttpServletRequest request, HttpServletResponse response, Person p) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        em.getTransaction().begin();
+        
+        Person managedPerson = em.find(Person.class, p.getId());
+        
+        PersonDAO.getInstance().delete(em, managedPerson);
+
+        em.getTransaction().commit();
+        
+        json.put("success", true);
+    }
+    
+    private Person createPerson(HttpServletRequest request, TipAkcije tipAkcije) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        Person p = new Person();
+        
+        Integer personId = Integer.parseInt(request.getParameter("id"));
+        
+        if (tipAkcije == TipAkcije.DELETE) {
+            p = PersonDAO.getInstance().findById(em, personId);
+        }
+        
+        return p;
+        
+    }
+            
+
 }

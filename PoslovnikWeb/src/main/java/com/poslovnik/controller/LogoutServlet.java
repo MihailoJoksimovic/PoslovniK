@@ -17,7 +17,7 @@ import org.json.JSONObject;
  *
  * @author mixa
  */
-public class LogoutServerlet extends HttpServlet {
+public class LogoutServlet extends HttpServlet {
 
     JSONObject json = new JSONObject();
    

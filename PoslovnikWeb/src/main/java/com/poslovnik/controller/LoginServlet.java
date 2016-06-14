@@ -28,7 +28,7 @@ import org.json.JSONObject;
  * @author mixa
  */
 @WebServlet(name = "LoginServerlet", urlPatterns = {"/login"})
-public class LoginServerlet extends HttpServlet {
+public class LoginServlet extends HttpServlet {
     JSONObject json = new JSONObject();
     
     /**
@@ -106,7 +106,7 @@ public class LoginServerlet extends HttpServlet {
 
             request.getSession().setAttribute("person", p);
         } catch (Exception ex) {
-            Logger.getLogger(LoginServerlet.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
             
             success = false;
             

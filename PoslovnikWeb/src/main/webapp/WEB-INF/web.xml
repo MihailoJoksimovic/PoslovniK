@@ -10,15 +10,15 @@
     </filter-mapping>
     <servlet>
         <servlet-name>LogoutServerlet</servlet-name>
-        <servlet-class>com.poslovnik.controller.LogoutServerlet</servlet-class>
+        <servlet-class>com.poslovnik.controller.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>PersonServerlet</servlet-name>
-        <servlet-class>com.poslovnik.controller.PersonServerlet</servlet-class>
+        <servlet-class>com.poslovnik.controller.PersonServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>PositionServerlet</servlet-name>
-        <servlet-class>com.poslovnik.controller.PositionServerlet</servlet-class>
+        <servlet-class>com.poslovnik.controller.PositionServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServerlet</servlet-name>
