@@ -68,7 +68,22 @@ public class PersonServerlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        throw new ServletException("Not implemented!");
+        
+        
+        String action = request.getParameter("action");
+        TipAkcije tip = TipAkcije.getForAction(action);
+        
+        switch (tip) {
+            case DELETE: {
+                Person p = createPerson(request, tip);
+                deleteAction(request, response, p);
+                break;
+            }
+            default:
+                throw new ServletException("Unknown action requested!");
+        }
+        
+        response.getWriter().print(json.toString());
     }
     
     private void listAction(HttpServletRequest request, HttpServletResponse response) {
@@ -93,6 +108,34 @@ public class PersonServerlet extends HttpServlet {
         }
         
         json.put("data", jsonArr);
+    }
+
+    private void deleteAction(HttpServletRequest request, HttpServletResponse response, Person p) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        em.getTransaction().begin();
+        
+        Person managedPerson = em.find(Person.class, p.getId());
+        
+        PersonDAO.getInstance().delete(em, managedPerson);
+
+        em.getTransaction().commit();
+        
+        json.put("success", true);
+    }
+    
+    private Person createPerson(HttpServletRequest request, TipAkcije tipAkcije) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        Person p = new Person();
+        
+        Integer personId = Integer.parseInt(request.getParameter("id"));
+        
+        if (tipAkcije == TipAkcije.DELETE) {
+            p = PersonDAO.getInstance().findById(em, personId);
+        }
+        
+        return p;
+        
     }
             
 

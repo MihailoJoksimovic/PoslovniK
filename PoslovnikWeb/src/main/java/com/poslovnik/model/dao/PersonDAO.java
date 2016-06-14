@@ -7,6 +7,7 @@ package com.poslovnik.model.dao;
 
 import com.poslovnik.model.data.Person;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -48,6 +49,18 @@ public class PersonDAO {
     public List<Person> findAll(EntityManager em) {
         Query query = em.createQuery("SELECT p FROM Person p");
         return query.getResultList();
+    }
+    
+    public Person findById(EntityManager em, Integer id) {
+        Query query = em.createQuery("SELECT p FROM Person p WHERE p.id = :id");
+                
+        query.setParameter("id", id);
+        
+        return (Person) query.getSingleResult();
+    }
+    
+    public void delete(EntityManager em, Person p) {
+        em.remove(p);
     }
         
 }

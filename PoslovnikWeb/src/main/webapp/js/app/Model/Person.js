@@ -1,4 +1,6 @@
 Poslovnik.PersonModel = Backbone.Model.extend({
+    url: 'person',
+    
     defaults: {
         'logged_in' : false
     },

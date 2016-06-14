@@ -2,6 +2,9 @@
  * Bootstraps PoslovniK web app :)
  */
 
+// Backend supports only GET & POST so ... yeah :)
+Backbone.emulateHTTP = true;
+
 Poslovnik.Person = new Poslovnik.PersonModel();
 
 Poslovnik.Router = new Router();
