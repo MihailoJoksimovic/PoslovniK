@@ -1,6 +1,10 @@
 Poslovnik.AdminDashboard = Backbone.View.extend({
     personCollection: new Poslovnik.PersonCollection(),
     
+    events: {
+        'click #add-new-btn' : 'onAddNewBtnClick'
+    },
+    
     initialize: function() {
         this.render();
         
@@ -26,14 +30,90 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         
         var tbody = $(tbl).find('tbody');
         
+        $(tbody).html("");
+        
+        var self = this;
+        
         this.personCollection.each(function(person) {
-           var template = "<tr><td style='text-align: center;'><input name='selected_person' data-id='<%= id %>' type='radio' /></td><td>aaa<%= email %></td><td><%= title %></td><td><%= first_name %></td><td><%= last_name %></td><td><%= position %></td><td><%= account_type %></td>";
+            if (person.get('new') === true) {
+                var row = self.getNewPersonRowHtml(person);
+                
+                tbody.prepend(row);
+                
+            } else {
+                var row = self.getExistingPersonRowHtml(person);
+                
+                tbody.append(row);
+            }
+            
+           
+           
+        });
+    },
+    
+    getNewPersonRowHtml: function(person) {
+        var id = person.get('id');
+        
+        var row = "<tr data-isnew='1' data-cid='<%= cid %>'>";
+        row+="<td style='text-align: center;'></td>";
+        row+='<td><input type="email" name="email" /></td>';
+        row+='<td><select name="title"><option value="mr">mr</option><option value="ms">ms</option></select></td>';
+        row+="<td><input type='text' name='first_name' /></td>";
+        row+="<td><input type='text' name='last_name' /></td>";
+        row+="<td><%= position_html %></td>";
+        row+="<td><%= account_type_html %></td>";
+        row += "<td><i>Actions</i></td>";
+        row += "</tr>";
+        
+        var template = _.template(row);
+        
+        var positionHtml = '<select name="position">';
+        
+        Poslovnik.Positions.each(function(position) {
+            positionHtml += '<option value="'+position.get('id')+'">'+position.get('name')+'</option>';
+        });
+        positionHtml += "</select>";
+        
+        var accountTypeHtml = '<select name="account_type">';
+        accountTypeHtml += '<option value="'+Poslovnik.PermissionLevels.ADMINISTRATOR+'">Administrator</option>';
+        accountTypeHtml += '<option value="'+Poslovnik.PermissionLevels.MODERATOR+'">Moderator</option>';
+        accountTypeHtml += '<option value="'+Poslovnik.PermissionLevels.REGULAR_USER+'">Employee</option>';
+        accountTypeHtml += "</select>";
+        
+        var rowHtml = template({
+            cid: person.cid,
+            position_html: positionHtml,
+            account_type_html: accountTypeHtml
+        });
+        
+        
+      
+        return rowHtml;
+    },
+    
+    getExistingPersonRowHtml: function(person) {
+        var template = "<tr><td style='text-align: center;'><input name='selected_person' data-id='<%= id %>' type='radio' /></td><td><%= email %></td><td><%= title %></td><td><%= first_name %></td><td><%= last_name %></td><td><%= position %></td><td><%= account_type %></td>";
            template += "<td><i>Actions</i></td>";
            template += "</tr>";
             
            var template = _.template(template); 
            
            var accountType = "Employee";
+           
+           switch(person.get('permission_level')) {
+               case Poslovnik.PermissionLevels.ADMINISTRATOR:
+                   accountType = "Administrator";
+                   break;
+               case Poslovnik.PermissionLevels.MODERATOR:
+                   accountType = "Moderator";
+                   break;
+               case Poslovnik.PermissionLevels.REGULAR_USER:
+                   accountType = "Employee";
+                   break;
+               default:
+                   accountType = "";
+                   break;
+           }
            
            if (person.get('account_type') == Poslovnik.PermissionLevels.MODERATOR) {
                accountType = "Moderator";
@@ -51,7 +131,14 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
                account_type: accountType
            });
            
-           tbody.append(row);
-        });
+           
+           return row;
+    },
+    
+    onAddNewBtnClick: function() {
+        var person = new Poslovnik.PersonModel();
+        person.set('new', true);
+        
+        this.personCollection.add(person);
     }
 });
