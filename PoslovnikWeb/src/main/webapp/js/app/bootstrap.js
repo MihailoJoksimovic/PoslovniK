@@ -6,6 +6,8 @@ Poslovnik.Person = new Poslovnik.PersonModel();
 
 Poslovnik.Router = new Router();
 
+Poslovnik.Positions = new Poslovnik.PositionCollection(Poslovnik.PositionsList);
+
 Backbone.history.start();
 
 // Do this only once when starting the app -- check if user is already

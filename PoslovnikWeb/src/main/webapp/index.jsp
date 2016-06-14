@@ -1,3 +1,8 @@
+<%@page import="java.util.List"%>
+<%@page import="com.poslovnik.model.data.Position"%>
+<%@page import="com.poslovnik.model.dao.EntityManagerWrapper"%>
+<%@page import="javax.persistence.EntityManager"%>
+<%@page import="com.poslovnik.model.dao.PositionDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -49,6 +54,35 @@
     </script>
     
     <script>Poslovnik = {};</script>
+    
+    <script>
+        Poslovnik = Poslovnik || {};
+        
+        // Prefill list of positions so that we can use it later
+        // when creating a collection 
+        
+        Poslovnik.PositionsList = [];
+        
+        <%
+            EntityManager em = EntityManagerWrapper.getEntityManager();
+            List<Position> positions = PositionDAO.getInstance().findAll(em);
+            
+            for (Position p : positions) {
+        %>
+            Poslovnik.PositionsList.push({
+                id: <%= p.getId() %>,
+                name: "<%= p.getName() %>"
+            });
+        <%
+            }
+        %>
+            
+            Poslovnik.PermissionLevels = {
+                REGULAR_USER: 10,
+                MODERATOR: 50,
+                ADMINISTRATOR: 100
+            };
+    </script>
     
     <script type="text/javascript" src="js/app/Model/Person.js"></script>
     <script type="text/javascript" src="js/app/Collection/PersonCollection.js"></script>

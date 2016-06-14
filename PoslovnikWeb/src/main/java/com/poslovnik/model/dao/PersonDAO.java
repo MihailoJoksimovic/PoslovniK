@@ -6,12 +6,7 @@
 package com.poslovnik.model.dao;
 
 import com.poslovnik.model.data.Person;
-import com.sun.xml.internal.ws.util.Constants;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;

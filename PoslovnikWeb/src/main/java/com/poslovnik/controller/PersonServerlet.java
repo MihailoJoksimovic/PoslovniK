@@ -87,6 +87,7 @@ public class PersonServerlet extends HttpServlet {
             jsonObj.put("last_name", p.getLastName());
             jsonObj.put("title", p.getTitle());
             jsonObj.put("permission_level", p.getPermissionLevel());
+            jsonObj.put("position_name", p.getPosition().getName());
             
             jsonArr.put(jsonObj);
         }
