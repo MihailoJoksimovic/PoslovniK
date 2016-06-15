@@ -7,6 +7,7 @@ package com.poslovnik.controller;
 
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PersonDAO;
+import com.poslovnik.model.dao.PositionDAO;
 import com.poslovnik.model.data.Person;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,7 +44,7 @@ public class PersonServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        TipAkcije tip = TipAkcije.getForAction(action);
+        ActionType tip = ActionType.getForAction(action);
         
         switch (tip) {
             case LIST: {
@@ -71,7 +72,7 @@ public class PersonServlet extends HttpServlet {
         
         
         String action = request.getParameter("action");
-        TipAkcije tip = TipAkcije.getForAction(action);
+        ActionType tip = ActionType.getForAction(action);
         
         switch (tip) {
             case DELETE: {
@@ -79,11 +80,27 @@ public class PersonServlet extends HttpServlet {
                 deleteAction(request, response, p);
                 break;
             }
+            case ADD:
+                Person p = createPerson(request, tip);
+                addAction(request, response, p);
+                break;
             default:
                 throw new ServletException("Unknown action requested!");
         }
         
         response.getWriter().print(json.toString());
+    }
+    
+    private void addAction(HttpServletRequest request, HttpServletResponse response, Person p) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        em.getTransaction().begin();
+        
+        PersonDAO.getInstance().add(em, p);
+
+        em.getTransaction().commit();
+        
+        json.put("success", true);
     }
     
     private void listAction(HttpServletRequest request, HttpServletResponse response) {
@@ -124,14 +141,23 @@ public class PersonServlet extends HttpServlet {
         json.put("success", true);
     }
     
-    private Person createPerson(HttpServletRequest request, TipAkcije tipAkcije) {
+    private Person createPerson(HttpServletRequest request, ActionType tipAkcije) {
         EntityManager em = EntityManagerWrapper.getEntityManager();
         Person p = new Person();
         
-        Integer personId = Integer.parseInt(request.getParameter("id"));
+        String personIdString = request.getParameter("id");
         
-        if (tipAkcije == TipAkcije.DELETE) {
+        if (personIdString != null) {
+            Integer personId = Integer.parseInt(request.getParameter("id"));
+            
             p = PersonDAO.getInstance().findById(em, personId);
+        } else {
+            p.setEmail(request.getParameter("email"));
+            p.setFirstName(request.getParameter("first_name"));
+            p.setLastName(request.getParameter("last_name"));
+            p.setTitle(request.getParameter("title"));
+            // TODO: Parse Position
+            p.setPermissionLevel(Short.parseShort(request.getParameter("account_type")));
         }
         
         return p;

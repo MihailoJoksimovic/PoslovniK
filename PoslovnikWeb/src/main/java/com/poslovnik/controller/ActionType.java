@@ -9,17 +9,17 @@ package com.poslovnik.controller;
  *
  * @author mixa
  */
-public enum TipAkcije {
+public enum ActionType {
     LIST("list"), ADD("add"), EDIT("edit"), DELETE("delete");
 
     private final String action;
 
-    private TipAkcije(String action) {
+    private ActionType(String action) {
         this.action = action;
     }
 
-    public static TipAkcije getForAction(String action) {
-        for (TipAkcije tipAkcije : values()) {
+    public static ActionType getForAction(String action) {
+        for (ActionType tipAkcije : values()) {
             if (tipAkcije.action.equals(action)) {
                 return tipAkcije;
             }

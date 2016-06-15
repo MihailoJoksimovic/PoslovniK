@@ -71,7 +71,7 @@ public class PositionServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String action = request.getParameter("action");
-        TipAkcije tip = TipAkcije.getForAction(action);
+        ActionType tip = ActionType.getForAction(action);
         
         switch (tip) {
             case LIST: {

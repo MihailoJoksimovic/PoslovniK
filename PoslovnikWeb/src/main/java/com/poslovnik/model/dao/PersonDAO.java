@@ -62,5 +62,9 @@ public class PersonDAO {
     public void delete(EntityManager em, Person p) {
         em.remove(p);
     }
+    
+    public void add(EntityManager em, Person p) {
+        em.persist(p);
+    }
         
 }
