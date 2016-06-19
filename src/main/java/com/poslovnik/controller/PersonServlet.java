@@ -84,15 +84,21 @@ public class PersonServlet extends HttpServlet {
         String action = request.getParameter("action");
         ActionType tip = ActionType.getForAction(action);
         
+        Person p;
+        
         switch (tip) {
             case DELETE: {
-                Person p = createPerson(request, tip);
+                p = createPerson(request, tip);
                 deleteAction(request, response, p);
                 break;
             }
             case ADD:
-                Person p = createPerson(request, tip);
+                p = createPerson(request, tip);
                 addAction(request, response, p);
+                break;
+            case EDIT:
+                p = createPerson(request, tip);
+                editAction(request, response, p);
                 break;
             default:
                 throw new ServletException("Unknown action requested!");
@@ -141,6 +147,7 @@ public class PersonServlet extends HttpServlet {
             
             jsonObj.put("id", p.getId());
             jsonObj.put("email", p.getEmail());
+            jsonObj.put("password", p.getPassword());
             jsonObj.put("first_name", p.getFirstName());
             jsonObj.put("last_name", p.getLastName());
             jsonObj.put("title", p.getTitle());
@@ -177,8 +184,6 @@ public class PersonServlet extends HttpServlet {
             Integer personId = Integer.parseInt(request.getParameter("id"));
             
             p = PersonDAO.getInstance().findById(em, personId);
-            
-            return p;
         } 
 
         Gson g = new Gson();
@@ -201,6 +206,29 @@ public class PersonServlet extends HttpServlet {
             
        return p;
         
+    }
+
+    private void editAction(HttpServletRequest request, HttpServletResponse response, Person p) throws IOException {
+        
+        try {
+            EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+            em.getTransaction().begin();
+
+            PersonDAO.getInstance().edit(em, p);
+
+            em.getTransaction().commit();
+
+            json.put("success", true);
+        } catch (ConstraintViolationException ex) {
+            response.sendError(400, "Invalid data provided!");
+            
+            return;
+        } catch (Exception ex) {
+            response.sendError(500, "Unknown error");
+            
+            return;
+        }
     }
     
     private class PersonBean {

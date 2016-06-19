@@ -78,5 +78,11 @@ public class PersonDAO {
     public void add(EntityManager em, Person p) {
         em.persist(p);
     }
+
+    public void edit(EntityManager em, Person p) {
+        Person mergedPerson = em.merge(p);
+
+        em.persist(mergedPerson);
+    }
         
 }

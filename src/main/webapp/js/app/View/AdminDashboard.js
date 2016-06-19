@@ -5,7 +5,8 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         'click #add-new-btn' : 'onAddNewBtnClick',
         'click .delete-row' : 'onDeleteRowBtnClick',
         'click .save-row' : 'onSaveRowBtnClick',
-        'click .edit-row' : 'onEditRowBtnClick'
+        'click .edit-row' : 'onEditRowBtnClick',
+        'click .cancel-edit-row' : 'onCancelEditRowBtnClick'
     },
     
     initialize: function() {
@@ -180,7 +181,11 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         
         this.copyDatafromFormToModel(model, cid);
         
-        var url = 'person?action=add';
+        if (model.get('new')) {
+            var url = 'person?action=add';
+        } else {
+            var url = 'person?action=edit&id='+model.get('id');
+        }
         
         var errorFn = function() {
             // Display unknown error modal
@@ -238,8 +243,13 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var row = this.$el.find('tr[data-cid='+cid+']');
         
         var rowHtml = this.getPersonEditRowHtml(model);
+        rowHtml += "<td><a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='cancel-edit-row glyphicon glyphicon-remove'></a></td>";
         
         row.html(rowHtml);
+    },
+    
+    onCancelEditRowBtnClick: function(event) {
+        this.personCollection.fetch();
     },
     
     
