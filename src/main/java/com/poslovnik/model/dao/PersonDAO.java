@@ -59,6 +59,18 @@ public class PersonDAO {
         return (Person) query.getSingleResult();
     }
     
+    public Person findByEmail(EntityManager em, String email) {
+        try {
+            Query query = em.createQuery("SELECT p FROM Person p WHERE p.email = :email");
+                
+            query.setParameter("email", email);
+            
+            return (Person) query.getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
+    }
+    
     public void delete(EntityManager em, Person p) {
         em.remove(p);
     }

@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
+import com.poslovnik.exception.DuplicateEntryException;
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.dao.PositionDAO;
@@ -29,6 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -99,18 +101,34 @@ public class PersonServlet extends HttpServlet {
         response.getWriter().print(json.toString());
     }
     
-    private void addAction(HttpServletRequest request, HttpServletResponse response, Person p) {
+    private void addAction(HttpServletRequest request, HttpServletResponse response, Person p) throws IOException {
         EntityManager em = EntityManagerWrapper.getEntityManager();
         
-        em.getTransaction().begin();
+        // Check for duplicates
+        Person duplicate = PersonDAO.getInstance().findByEmail(em, p.getEmail());
         
-        PersonDAO.getInstance().add(em, p);
+        if (duplicate != null) {
+            response.sendError(409, "Duplicate entry");
+            
+            return;
+        } 
+        
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().commit();
+            PersonDAO.getInstance().add(em, p);
+
+            em.getTransaction().commit();
+
+            json.put("success", true);
+        } catch (ConstraintViolationException ex) {
+            response.sendError(400, "Invalid data provided!");
+            
+            return;
+        }
         
-        json.put("success", true);
     }
-    
+            
     private void listAction(HttpServletRequest request, HttpServletResponse response) {
         EntityManager em = EntityManagerWrapper.getEntityManager();
 
@@ -251,7 +269,6 @@ public class PersonServlet extends HttpServlet {
         public void setAccount_type(String account_type) {
             this.account_type = account_type;
         }
-        
         
         
         

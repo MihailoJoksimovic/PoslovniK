@@ -169,18 +169,44 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var self = this;
         
         var successFn = function() {
+            self.showSuccess("Person has been added!");
             self.personCollection.fetch();
         };
 
+        var errorFn = function(data, response) {
+            if (response.status == 409) {
+                self.showError("User with that email address already exists!");
+
+                return;
+            }
+            
+            switch (response.status) {
+                case 409:
+                    self.showError("User with that email address already exists!");
+                    break;
+                case 400:
+                    self.showError("Some fields are not field! Please make sure to fill in all fields.");
+                    break;
+                default:
+                    self.showError("An unknown error has occurred ("+response.status+").");
+                    break;
+            }
+            
+            
+        };
+        
         model.save(
             {}, 
             {
                 url: url, 
                 success: successFn,
-                error: errorFn 
-            }
+                error: errorFn
+            },
+            self
         );
     },
+    
+    
     
     onDeleteRowBtnClick: function(event) {
         var target = $(event.target);
@@ -211,5 +237,19 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         model.set('last_name', last_name);
         model.set('position', position);
         model.set('account_type', accountType);
+    },
+    
+    showSuccess: function(text) {
+        this.hideAllAlerts();
+        this.$el.find('.alert-success').html(text).removeClass('hidden');
+    },
+    
+    showError: function(text) {
+        this.hideAllAlerts();
+        this.$el.find('.alert-danger').html(text).removeClass('hidden');
+    },
+    
+    hideAllAlerts: function() {
+        this.$el.find('.alert').addClass('hidden');
     }
 });
