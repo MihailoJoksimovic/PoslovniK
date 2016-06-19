@@ -184,7 +184,11 @@ public class PersonServlet extends HttpServlet {
             Integer personId = Integer.parseInt(request.getParameter("id"));
             
             p = PersonDAO.getInstance().findById(em, personId);
-        } 
+        }
+        
+        if (tipAkcije == tipAkcije.DELETE) {
+            return p;
+        }
 
         Gson g = new Gson();
 

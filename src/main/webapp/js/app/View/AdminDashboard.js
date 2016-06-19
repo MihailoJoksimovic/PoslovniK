@@ -254,6 +254,12 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
     
     
     onDeleteRowBtnClick: function(event) {
+        var confirmation = confirm("Are you sure?");
+        
+        if (!confirmation) {
+            return false;
+        }
+        
         var target = $(event.target);
         
         var cid = $(target).attr('data-cid');
