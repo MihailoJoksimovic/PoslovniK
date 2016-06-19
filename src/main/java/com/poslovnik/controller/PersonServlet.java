@@ -5,10 +5,18 @@
  */
 package com.poslovnik.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.JsonReader;
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.dao.PositionDAO;
 import com.poslovnik.model.data.Person;
+import com.poslovnik.model.data.Position;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -141,26 +149,111 @@ public class PersonServlet extends HttpServlet {
         json.put("success", true);
     }
     
-    private Person createPerson(HttpServletRequest request, ActionType tipAkcije) {
+    private Person createPerson(HttpServletRequest request, ActionType tipAkcije) throws IOException {
         EntityManager em = EntityManagerWrapper.getEntityManager();
         Person p = new Person();
         
         String personIdString = request.getParameter("id");
-        
+            
         if (personIdString != null) {
             Integer personId = Integer.parseInt(request.getParameter("id"));
             
             p = PersonDAO.getInstance().findById(em, personId);
-        } else {
-            p.setEmail(request.getParameter("email"));
-            p.setFirstName(request.getParameter("first_name"));
-            p.setLastName(request.getParameter("last_name"));
-            p.setTitle(request.getParameter("title"));
-            // TODO: Parse Position
-            p.setPermissionLevel(Short.parseShort(request.getParameter("account_type")));
+            
+            return p;
+        } 
+
+        Gson g = new Gson();
+
+        BufferedReader br = new BufferedReader(request.getReader());
+
+        PersonBean pb = g.fromJson(br.readLine(), PersonBean.class);
+
+        p.setEmail(pb.getEmail());
+        p.setFirstName(pb.getFirst_name());
+        p.setLastName(pb.getLast_name());
+        p.setTitle(pb.getTitle());
+        p.setPassword(pb.getPassword());
+        p.setSalt("salt");
+        p.setPermissionLevel(new Short(pb.getAccount_type()));
+
+        Position pos = PositionDAO.getInstance().findById(em, new Short(pb.getPosition()));
+        p.setPosition(pos);
+        
+            
+       return p;
+        
+    }
+    
+    private class PersonBean {
+        private String email;
+        private String password;
+        private String position;
+        private String first_name;
+        private String last_name;
+        private String title;
+        private String account_type;
+                
+                
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getPosition() {
+            return position;
+        }
+
+        public void setPosition(String position) {
+            this.position = position;
+        }
+
+        public String getFirst_name() {
+            return first_name;
+        }
+
+        public void setFirst_name(String first_name) {
+            this.first_name = first_name;
+        }
+
+        public String getLast_name() {
+            return last_name;
+        }
+
+        public void setLast_name(String last_name) {
+            this.last_name = last_name;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getAccount_type() {
+            return account_type;
+        }
+
+        public void setAccount_type(String account_type) {
+            this.account_type = account_type;
         }
         
-        return p;
+        
+        
         
     }
             

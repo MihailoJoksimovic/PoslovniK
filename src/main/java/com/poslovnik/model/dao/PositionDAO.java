@@ -28,5 +28,13 @@ public class PositionDAO {
         Query query = em.createQuery("SELECT p FROM Position p");
         return query.getResultList();
     }
+    
+    public Position findById(EntityManager em, Short id) {
+        Query query = em.createQuery("SELECT p FROM Position p WHERE p.id = :id");
+                
+        query.setParameter("id", id);
+        
+        return (Position) query.getSingleResult();
+    }
         
 }

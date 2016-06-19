@@ -45,6 +45,8 @@
         
     </div>
     
+    <%@include  file="pages/modals.html" %>
+    
     <script type="text/template" id="tpl-login">
         <%@include  file="pages/login.html" %>
     </script>

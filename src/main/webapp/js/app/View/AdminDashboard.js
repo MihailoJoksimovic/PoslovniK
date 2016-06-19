@@ -61,6 +61,7 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var row = "<tr data-isnew='1' data-cid='<%= cid %>'>";
         row+="<td style='text-align: center;'></td>";
         row+='<td><input type="email" name="email" /></td>';
+        row+='<td><input type="password" name="password" /></td>';
         row+='<td><select name="title"><option value="mr">mr</option><option value="ms">ms</option></select></td>';
         row+="<td><input type='text' name='first_name' /></td>";
         row+="<td><input type='text' name='last_name' /></td>";
@@ -97,7 +98,7 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
     },
     
     getExistingPersonRowHtml: function(person) {
-        var template = "<tr data-cid='<%= cid %>'><td style='text-align: center;'><input name='selected_person' data-id='<%= id %>' type='radio' /></td><td><%= email %></td><td><%= title %></td><td><%= first_name %></td><td><%= last_name %></td><td><%= position %></td><td><%= account_type %></td>";
+        var template = "<tr data-cid='<%= cid %>'><td style='text-align: center;'><input name='selected_person' data-id='<%= id %>' type='radio' /></td><td><%= email %></td><td><em>(hidden)</em><td><%= title %></td><td><%= first_name %></td><td><%= last_name %></td><td><%= position %></td><td><%= account_type %></td>";
            template += "<td><a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove' data-cid='<%= cid %>'></a></td>";
            template += "</tr>";
             
@@ -158,8 +159,27 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         this.copyDatafromFormToModel(model, cid);
         
         var url = 'person?action=add';
+        
+        var errorFn = function() {
+            // Display unknown error modal
+            
+            $('#unknown-error-modal').modal();
+        };
+        
+        var self = this;
+        
+        var successFn = function() {
+            self.personCollection.fetch();
+        };
 
-        model.save({}, {url: url });
+        model.save(
+            {}, 
+            {
+                url: url, 
+                success: successFn,
+                error: errorFn 
+            }
+        );
     },
     
     onDeleteRowBtnClick: function(event) {
@@ -177,6 +197,7 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var tr = $('tr[data-cid='+cid+']');
         
         var email = $(tr).find('input[name=email]').val();
+        var password = $(tr).find('input[name=password]').val();
         var first_name = $(tr).find('input[name=first_name]').val();
         var last_name = $(tr).find('input[name=last_name]').val();
         var title = $(tr).find('select[name=title]').val();
@@ -184,6 +205,7 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var accountType = $(tr).find('select[name=account_type]').val();
         
         model.set('email', email);
+        model.set('password', password);
         model.set('title', title);
         model.set('first_name', first_name);
         model.set('last_name', last_name);
