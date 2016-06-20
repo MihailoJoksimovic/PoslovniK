@@ -38,9 +38,15 @@ var Router = Backbone.Router.extend({
       
       // TODO: Display view based on user's permission level
       
-      var view = new Poslovnik.AdminDashboard();
-      var view = new Poslovnik.EmployeeDashboard();
+      var permissionlevel = person.get('permission_level');
       
+      // 50 == Moderator
+      if (permissionlevel >= 50) {
+          var view = new Poslovnik.AdminDashboard();
+      } else {
+          var view = new Poslovnik.EmployeeDashboard();
+      }
+
       view.$el.appendTo('#content');
       
       this.currentView = view;
