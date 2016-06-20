@@ -93,10 +93,12 @@
     <script type="text/javascript" src="js/app/Model/Person.js"></script>
     <script type="text/javascript" src="js/app/Collection/PersonCollection.js"></script>
     <script type="text/javascript" src="js/app/Collection/PositionCollection.js"></script>
+    <script type="text/javascript" src="js/app/Collection/PayoutCollection.js"></script>
     <script type="text/javascript" src="js/app/View/Home.js"></script>
     <script type="text/javascript" src="js/app/View/Login.js"></script>
     <script type="text/javascript" src="js/app/View/AdminDashboard.js"></script>
     <script type="text/javascript" src="js/app/View/EmployeeDashboard.js"></script>
+    <script type="text/javascript" src="js/app/View/PayoutTableView.js"></script>
     <script type="text/javascript" src="js/app/View/Navbar.js"></script>
     <script type="text/javascript" src="js/app/router.js"></script>
     <script type="text/javascript" src="js/app/bootstrap.js"></script>
