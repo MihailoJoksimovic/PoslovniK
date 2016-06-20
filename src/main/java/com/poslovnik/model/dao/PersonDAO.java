@@ -72,7 +72,9 @@ public class PersonDAO {
     }
     
     public void delete(EntityManager em, Person p) {
-        em.remove(p);
+        Person mergedPerson = em.merge(p);
+        
+        em.remove(mergedPerson);
     }
     
     public void add(EntityManager em, Person p) {

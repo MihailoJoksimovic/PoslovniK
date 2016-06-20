@@ -10,16 +10,20 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.poslovnik.exception.DuplicateEntryException;
+import com.poslovnik.exception.ValidationException;
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.dao.PositionDAO;
 import com.poslovnik.model.data.Person;
 import com.poslovnik.model.data.Position;
+import com.poslovnik.service.PersonService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,20 +88,17 @@ public class PersonServlet extends HttpServlet {
         String action = request.getParameter("action");
         ActionType tip = ActionType.getForAction(action);
         
-        Person p;
+        Person p = createPersonFromRequest(request, tip);
         
         switch (tip) {
             case DELETE: {
-                p = createPerson(request, tip);
                 deleteAction(request, response, p);
                 break;
             }
             case ADD:
-                p = createPerson(request, tip);
                 addAction(request, response, p);
                 break;
             case EDIT:
-                p = createPerson(request, tip);
                 editAction(request, response, p);
                 break;
             default:
@@ -108,43 +109,25 @@ public class PersonServlet extends HttpServlet {
     }
     
     private void addAction(HttpServletRequest request, HttpServletResponse response, Person p) throws IOException {
-        EntityManager em = EntityManagerWrapper.getEntityManager();
-        
-        // Check for duplicates
-        Person duplicate = PersonDAO.getInstance().findByEmail(em, p.getEmail());
-        
-        if (duplicate != null) {
-            response.sendError(409, "Duplicate entry");
-            
-            return;
-        } 
+        PersonService ps = PersonService.getInstance();
         
         try {
-            em.getTransaction().begin();
-
-            PersonDAO.getInstance().add(em, p);
-
-            em.getTransaction().commit();
-
-            json.put("success", true);
-        } catch (ConstraintViolationException ex) {
-            response.sendError(400, "Invalid data provided!");
+            ps.add(p);
             
-            return;
+            json.put("success", true);
+        } catch (ValidationException | ConstraintViolationException ex) {
+            response.sendError(400, "Validation failed");
         }
-        
     }
             
     private void listAction(HttpServletRequest request, HttpServletResponse response) {
-        EntityManager em = EntityManagerWrapper.getEntityManager();
-
-        List<Person> personList = PersonDAO.getInstance().findAll(em);
+        PersonService ps = PersonService.getInstance();
         
         JSONArray jsonArr = new JSONArray();
         
-        for (Person p : personList) {
+        for (Person p : ps.findAll()) {
             JSONObject jsonObj = new JSONObject();
-            
+        
             jsonObj.put("id", p.getId());
             jsonObj.put("email", p.getEmail());
             jsonObj.put("password", p.getPassword());
@@ -156,26 +139,33 @@ public class PersonServlet extends HttpServlet {
             
             jsonArr.put(jsonObj);
         }
-        
+
         json.put("data", jsonArr);
     }
 
-    private void deleteAction(HttpServletRequest request, HttpServletResponse response, Person p) {
-        EntityManager em = EntityManagerWrapper.getEntityManager();
+    private void editAction(HttpServletRequest request, HttpServletResponse response, Person p) throws IOException {
+        PersonService ps = PersonService.getInstance();
         
-        em.getTransaction().begin();
-        
-        Person managedPerson = em.find(Person.class, p.getId());
-        
-        PersonDAO.getInstance().delete(em, managedPerson);
-
-        em.getTransaction().commit();
-        
-        json.put("success", true);
+        try {
+            ps.edit(p);
+            
+            json.put("success", true);
+        } catch (ValidationException | ConstraintViolationException ex) {
+            response.sendError(400, "Validation failed");
+        }
     }
     
-    private Person createPerson(HttpServletRequest request, ActionType tipAkcije) throws IOException {
-        EntityManager em = EntityManagerWrapper.getEntityManager();
+    private void deleteAction(HttpServletRequest request, HttpServletResponse response, Person p) throws IOException {
+        PersonService ps = PersonService.getInstance();
+        
+        ps.delete(p);
+            
+        json.put("success", true);
+    }
+
+    private Person createPersonFromRequest(HttpServletRequest request, ActionType tipAkcije) throws IOException {
+        PersonService ps = PersonService.getInstance();
+        
         Person p = new Person();
         
         String personIdString = request.getParameter("id");
@@ -183,7 +173,7 @@ public class PersonServlet extends HttpServlet {
         if (personIdString != null) {
             Integer personId = Integer.parseInt(request.getParameter("id"));
             
-            p = PersonDAO.getInstance().findById(em, personId);
+            p = ps.findById(personId);
         }
         
         if (tipAkcije == tipAkcije.DELETE) {
@@ -204,35 +194,10 @@ public class PersonServlet extends HttpServlet {
         p.setSalt("salt");
         p.setPermissionLevel(new Short(pb.getAccount_type()));
 
-        Position pos = PositionDAO.getInstance().findById(em, new Short(pb.getPosition()));
+        Position pos = PositionDAO.getInstance().findById(EntityManagerWrapper.getEntityManager(), new Short(pb.getPosition()));
         p.setPosition(pos);
-        
             
        return p;
-        
-    }
-
-    private void editAction(HttpServletRequest request, HttpServletResponse response, Person p) throws IOException {
-        
-        try {
-            EntityManager em = EntityManagerWrapper.getEntityManager();
-        
-            em.getTransaction().begin();
-
-            PersonDAO.getInstance().edit(em, p);
-
-            em.getTransaction().commit();
-
-            json.put("success", true);
-        } catch (ConstraintViolationException ex) {
-            response.sendError(400, "Invalid data provided!");
-            
-            return;
-        } catch (Exception ex) {
-            response.sendError(500, "Unknown error");
-            
-            return;
-        }
     }
     
     private class PersonBean {
