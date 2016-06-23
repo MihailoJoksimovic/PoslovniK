@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -77,10 +78,8 @@ public class PayoutServlet extends HttpServlet {
         
         String payuotsJsonArray = gson.toJson(payouts);
         
-        json.put("success", true);
-        json.put("data", payuotsJsonArray);
         
-        response.getOutputStream().print(json.toString());
+        response.getOutputStream().print(payuotsJsonArray);
     }
 
     

@@ -1,9 +1,16 @@
 Poslovnik.PayoutTableView = Backbone.View.extend({
     initialize: function() {
         this.render();
+        
+        this.listenTo(this.collection, 'fetch update reset', this.subRender);
     },
     
     render: function() {
+        this.subRender();
+    },
+    
+    subRender: function() {
+        console.log(this.collection);
        var tbody = this.$el.find('tbody');
        
        var template = '<tr><td><%= amount %></td><td><%= date %></td><td><%= type %></td><td><%= description %></td></tr>';
@@ -23,6 +30,5 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
        });
        
        $(tbody).html(html);
-       
     }
 });
