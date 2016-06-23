@@ -6,8 +6,10 @@
 package com.poslovnik.model.data;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,12 +19,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -34,6 +38,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")})
 public class Person implements Serializable {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
+    private Collection<Payout> payoutCollection;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -200,6 +206,15 @@ public class Person implements Serializable {
     @Override
     public String toString() {
         return "com.poslovnik.model.data.Person[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Payout> getPayoutCollection() {
+        return payoutCollection;
+    }
+
+    public void setPayoutCollection(Collection<Payout> payoutCollection) {
+        this.payoutCollection = payoutCollection;
     }
     
 }

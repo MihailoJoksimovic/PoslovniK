@@ -12,6 +12,10 @@
         <servlet-name>PositionServerlet</servlet-name>
         <servlet-class>com.poslovnik.controller.PositionServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>PayoutServlet</servlet-name>
+        <servlet-class>com.poslovnik.controller.PayoutServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LogoutServerlet</servlet-name>
         <url-pattern>/logout</url-pattern>
@@ -23,6 +27,10 @@
     <servlet-mapping>
         <servlet-name>PositionServerlet</servlet-name>
         <url-pattern>/position</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PayoutServlet</servlet-name>
+        <url-pattern>/payout</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
