@@ -6,23 +6,24 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         'click .delete-row' : 'onDeleteRowBtnClick',
         'click .save-row' : 'onSaveRowBtnClick',
         'click .edit-row' : 'onEditRowBtnClick',
+        'click .manage-row' : 'onManageRowBtnClick',
         'click .cancel-edit-row' : 'onCancelEditRowBtnClick'
     },
     
-    initialize: function() {
+    initialize: function(options) {
         this.render();
         
-        personCollection = this.personCollection;
+        this.personCollection = options.personCollection;
         
         this.listenTo(this.personCollection, 'update', this.onCollectionUpdated);
+        
+        this.personCollection.fetch();
     },
     
     render: function() {
         var tpl = _.template($('#tpl-admin-dashboard').html());
         
         this.$el.html(tpl);
-        
-        this.personCollection.fetch();
 
         return this;
     },
@@ -122,7 +123,11 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
     
     getExistingPersonRowHtml: function(person) {
         var template = "<tr data-cid='<%= cid %>'><td style='text-align: center;'><input name='selected_person' data-id='<%= id %>' type='radio' /></td><td><%= email %></td><td><em>(hidden)</em><td><%= title %></td><td><%= first_name %></td><td><%= last_name %></td><td><%= position %></td><td><%= account_type %></td>";
-           template += "<td><a data-cid='<%= cid %>' href='javascript: void(0);' class='edit-row glyphicon glyphicon-pencil'></a>&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove' data-cid='<%= cid %>'></a></td>";
+           template += "<td>";
+           template += "<a data-cid='<%= cid %>' href='javascript: void(0);' class='edit-row glyphicon glyphicon-pencil'></a>&nbsp;";
+           template += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='manage-row glyphicon glyphicon-search' data-cid='<%= cid %>'></a>&nbsp;";
+           template += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove' data-cid='<%= cid %>'></a>";
+           template += "</td>";
            template += "</tr>";
             
            var template = _.template(template); 
@@ -246,6 +251,20 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         rowHtml += "<td><a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='cancel-edit-row glyphicon glyphicon-remove'></a></td>";
         
         row.html(rowHtml);
+    },
+    
+    onManageRowBtnClick: function(event) {
+        var target = $(event.target);
+        
+        var cid = $(target).attr('data-cid');
+        
+        var model = this.personCollection.get({ cid: cid });
+        
+        if (model.get('new') === true) {
+            return;
+        }
+        
+        Poslovnik.Router.navigate("employee/"+model.get('id'), { trigger: true });
     },
     
     onCancelEditRowBtnClick: function(event) {

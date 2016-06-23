@@ -59,6 +59,10 @@
         <%@include  file="pages/employee_dashboard.html" %>
     </script>
     
+    <script type="text/template" id="tpl-manage-employee">
+        <%@include  file="pages/manage_employee.html" %>
+    </script>
+    
     <script>Poslovnik = {};</script>
     
     <script>
@@ -98,6 +102,7 @@
     <script type="text/javascript" src="js/app/View/Login.js"></script>
     <script type="text/javascript" src="js/app/View/AdminDashboard.js"></script>
     <script type="text/javascript" src="js/app/View/EmployeeDashboard.js"></script>
+    <script type="text/javascript" src="js/app/View/ManageEmployee.js"></script>
     <script type="text/javascript" src="js/app/View/PayoutTableView.js"></script>
     <script type="text/javascript" src="js/app/View/Navbar.js"></script>
     <script type="text/javascript" src="js/app/router.js"></script>
