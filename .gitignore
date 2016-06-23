@@ -1,2 +1,5 @@
 /PoslovniK/nbproject/private/
 /PoslovnikWeb/target/
+target/
+nb-configuration.xml
+.DS_STORE
