@@ -9,6 +9,18 @@ Poslovnik.ManageEmployee = Backbone.View.extend({
        this.person = options.person;
        
        this.render();
+        
+        var collection = new Poslovnik.PayoutCollection({
+            person: this.person
+        });
+
+        var payoutTableView = new Poslovnik.PayoutTableView({
+            el: this.$el.find('#payroll-list'),
+            collection: collection
+        });
+        
+        collection.fetch();
+
    },
    
    render: function() {
@@ -18,16 +30,18 @@ Poslovnik.ManageEmployee = Backbone.View.extend({
            return;
        }
        
+       var template = _.template($('#tpl-manage-employee').html());
+       
+       var html = template();
+       
+       this.$el.html(html);
+       
        this.subRender();
 
        return this;
    },
    
    subRender: function() {
-       var template = _.template($('#tpl-manage-employee').html());
        
-       var html = template();
-       
-       this.$el.html(html);
    }
 });
