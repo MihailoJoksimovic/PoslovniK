@@ -8,6 +8,9 @@ Poslovnik.PersonModel = Backbone.Model.extend({
         return this.get('loggedIn') === true;
     },
     
+    hasModeratorOrAdminPrivileges: function() {
+        return this.get('permission_level') >= Poslovnik.PermissionLevels.MODERATOR;
+    },
     
     checkIfLoggedIn: function() {
         var self = this;

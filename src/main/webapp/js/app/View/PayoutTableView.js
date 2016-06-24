@@ -6,6 +6,10 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     },
     
     render: function() {
+        if (!Poslovnik.Person.hasModeratorOrAdminPrivileges()) {
+            this.$el.find('.show-in-admin-view').addClass('hidden');
+        }
+        
         this.subRender();
     },
     
