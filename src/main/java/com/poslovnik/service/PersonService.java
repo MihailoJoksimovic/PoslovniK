@@ -8,6 +8,7 @@ package com.poslovnik.service;
 import com.poslovnik.exception.ValidationException;
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PersonDAO;
+import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -44,6 +45,19 @@ public class PersonService {
         }
         
         PersonDAO.getInstance().add(em, p);
+        
+        getEntityManager().getTransaction().commit();
+    }
+    
+    public void addPayout(Person p, Payout payout) {
+        
+        if (!getEntityManager().getTransaction().isActive()) {
+            getEntityManager().getTransaction().begin();
+        }
+        
+        p.addPayout(payout);
+        
+        getEntityManager().persist(payout);
         
         getEntityManager().getTransaction().commit();
     }

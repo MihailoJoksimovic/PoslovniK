@@ -217,4 +217,9 @@ public class Person implements Serializable {
         this.payoutCollection = payoutCollection;
     }
     
+    public void addPayout(Payout payout) {
+        payout.setPersonId(this);
+        this.getPayoutCollection().add(payout);
+    }
+    
 }

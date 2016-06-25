@@ -7,7 +7,13 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         'click #add-new-payment' : 'onAddNewPaymentBtnClick'
     },
     
-    initialize: function() {
+    person: false,
+    
+    initialize: function(options) {
+        if (options.person) {
+            this.person = options.person;
+        }
+        
         this.render();
         
         this.listenTo(this.collection, 'fetch update reset', this.subRender);
@@ -119,6 +125,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     onAddNewPaymentBtnClick: function() {
         var model = new Backbone.Model();
         
+        model.set('person_id', this.person.get('id'));
         model.set('new', true);
         
         this.collection.add(model);
@@ -134,7 +141,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         this.copyDatafromFormToModel(model, cid);
         
         if (model.get('new')) {
-            var url = 'payout?action=add';
+            var url = 'payout?action=add&person_id='+this.person.get('id');
         } else {
             var url = 'payout?action=edit&id='+model.get('id');
         }
@@ -148,21 +155,12 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         var self = this;
         
         var successFn = function() {
-            self.showSuccess("Person has been added!");
-            self.personCollection.fetch();
+            self.showSuccess("Paymanet had been added successfully!");
+            self.collection.fetch();
         };
 
         var errorFn = function(data, response) {
-            if (response.status == 409) {
-                self.showError("User with that email address already exists!");
-
-                return;
-            }
-            
             switch (response.status) {
-                case 409:
-                    self.showError("User with that email address already exists!");
-                    break;
                 case 400:
                     self.showError("Some fields are not field! Please make sure to fill in all fields.");
                     break;

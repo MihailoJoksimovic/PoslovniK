@@ -16,7 +16,8 @@ Poslovnik.ManageEmployee = Backbone.View.extend({
 
         var payoutTableView = new Poslovnik.PayoutTableView({
             el: this.$el.find('#payroll-list'),
-            collection: collection
+            collection: collection,
+            person: this.person
         });
         
         collection.fetch();

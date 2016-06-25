@@ -12,7 +12,10 @@ import com.poslovnik.gson.GsonWrapper;
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
+import com.poslovnik.model.data.Person;
+import com.poslovnik.service.PayoutService;
 import com.poslovnik.service.PersonService;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -50,6 +53,31 @@ public class PayoutServlet extends HttpServlet {
                 return;
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        ActionType tip = ActionType.getForAction(action);
+        
+        Payout p = getObjectFromRequest(request);
+        
+        switch (tip) {
+            case ADD:
+                addAction(request, p);
+                break;
+            default:
+                throw new ServletException("Unknown action requested!");
+        }
+        
+        response.getWriter().print(json.toString());
+        
+//        try {
+//            EntityManagerWrapper.getEntityManager().flush();
+//        } catch (TransactionRequiredException ex) {
+//            // ..
+//        }
+        
+    }
     
     private void listAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Person p;
@@ -76,6 +104,34 @@ public class PayoutServlet extends HttpServlet {
         
         response.getOutputStream().print(payuotsJsonArray);
     }
-
     
+    private void addAction(HttpServletRequest request, Payout p) throws IOException {
+        Integer personId = Integer.parseInt(request.getParameter("person_id"));
+        
+        Person person = PersonService.getInstance().findById(personId);
+        
+        PersonService.getInstance().addPayout(person, p);
+        
+        json.put("success", true);
+    }
+
+    private Payout getObjectFromRequest(HttpServletRequest request) throws IOException {
+        Payout p;
+        
+        Gson gson = GsonWrapper.getGson();
+        
+        BufferedReader br = new BufferedReader(request.getReader());
+        
+        p = gson.fromJson(br.readLine(), Payout.class);
+        
+        if (p.getId() == null) {
+            Integer personId = Integer.parseInt(request.getParameter("person_id"));
+            
+            Person person = PersonService.getInstance().findById(personId);
+            
+            p.setPersonId(person);
+        }
+        
+        return p;
+    }
 }
