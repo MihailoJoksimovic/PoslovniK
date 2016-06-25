@@ -3,6 +3,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         'click .edit-payment' : 'onEditPaymentBtnClick',
         'click .save-row' : 'onSavePaymentBtnClick',
         'click .cancel-edit-row' : 'onClickCancelEditRowBtnClick',
+        'click .delete-row' : 'onDeleteRowBtnClick',
         'click #add-new-payment' : 'onAddNewPaymentBtnClick'
     },
     
@@ -86,6 +87,29 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     
     onClickCancelEditRowBtnClick: function() {
         this.collection.fetch();
+    },
+    
+    onDeleteRowBtnClick: function(event) {
+        var target = $(event.target);
+        
+        var cid = $(target).attr('data-cid');
+        
+        var model = this.collection.get({ cid: cid });
+        
+        var row = this.$el.find('tr[data-cid='+cid+']');
+        
+        var confirmation = confirm("Are you sure?");
+        
+        if (!confirmation) {
+            return;
+        }
+        
+        model.destroy();
+        
+        this.collection.remove(model);
+            
+        $(row).remove();
+
     },
     
     onAddNewPaymentBtnClick: function() {
