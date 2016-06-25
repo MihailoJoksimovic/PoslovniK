@@ -207,8 +207,8 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     
     getEditRowHtml: function(model) {
         var row = '';
-        row +='<td><input type="number" name="amount" value="<%= amount %>" /></td>';
-        row +='<td><input type="text" name="date" value="<%= formatted_date %>" /><input type="hidden" name="alt_date" value="<%= date_raw %>" /></td>';
+        row +='<td><input required type="number" name="amount" value="<%= amount %>" /></td>';
+        row +='<td><input required type="text" name="date" value="<%= formatted_date %>" /><input type="hidden" name="alt_date" value="<%= date_raw %>" /></td>';
         
         var paymentTypes = ['salary', 'bonus', 'other'];
         
@@ -222,7 +222,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         
         row += rowPaymentTypes;
         
-        row +='<td><input type="text" name="description" value="<%= description %>" /></td>';
+        row +='<td><input required type="text" name="description" value="<%= description %>" /></td>';
         
         row = _.template(row);
         
@@ -247,6 +247,20 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         model.set('date', date);
         model.set('type', type);
         model.set('description', description);
+    },
+    
+    showSuccess: function(text) {
+        this.hideAllAlerts();
+        $('.alert-success').html(text).removeClass('hidden');
+    },
+    
+    showError: function(text) {
+        this.hideAllAlerts();
+        $('.alert-danger').html(text).removeClass('hidden');
+    },
+    
+    hideAllAlerts: function() {
+        $('.alert').addClass('hidden');
     }
     
     
