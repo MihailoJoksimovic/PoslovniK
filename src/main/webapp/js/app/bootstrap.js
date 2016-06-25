@@ -2,6 +2,15 @@
  * Bootstraps PoslovniK web app :)
  */
 
+$.datepicker.setDefaults(
+  $.extend(
+    {
+        'dateFormat':'dd.mm.yy',
+        'altFormat':'yy-mm-dd'
+    }
+  )
+);
+
 // Backend supports only GET & POST so ... yeah :)
 Backbone.emulateHTTP = true;
 

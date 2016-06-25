@@ -14,12 +14,13 @@
         
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
         <script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
         <script type="text/javascript" src="js/underscore.min.js"></script>
         <script type="text/javascript" src="js/backbone.js"></script>
         <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        <script type="text/javascript" src="/scripts/jquery.ui.datepicker-it.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-default" id="top-navbar">
@@ -94,6 +95,7 @@
             };
     </script>
     
+    <script type="text/javascript" src="js/moment.js"></script>
     <script type="text/javascript" src="js/app/Model/Person.js"></script>
     <script type="text/javascript" src="js/app/Collection/PersonCollection.js"></script>
     <script type="text/javascript" src="js/app/Collection/PositionCollection.js"></script>
