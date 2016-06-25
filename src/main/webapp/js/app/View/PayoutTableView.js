@@ -2,7 +2,8 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     events: {
         'click .edit-payment' : 'onEditPaymentBtnClick',
         'click .save-row' : 'onSavePaymentBtnClick',
-        'click .cancel-edit-row' : 'onClickCancelEditRowBtnClick'
+        'click .cancel-edit-row' : 'onClickCancelEditRowBtnClick',
+        'click #add-new-payment' : 'onAddNewPaymentBtnClick'
     },
     
     initialize: function() {
@@ -20,12 +21,12 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     },
     
     subRender: function() {
-       if (this.collection.length == 0) {
+       if (this.collection.length === 0) {
            return;
        }
        
-       console.log(this.collection.length);
-
+       var self = this;
+       
        var tbody = this.$el.find('tbody');
        
        var userIsModeratorOrAdmin = Poslovnik.Person.hasModeratorOrAdminPrivileges();
@@ -45,13 +46,17 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
        var html = "";
        
        this.collection.each(function(model) {
-          var rowHtml = template({
-              cid: model.cid,
-              amount: model.get('amount'),
-              date: Poslovnik.Person.formatDate(model.get('date')),
-              description: model.get('description'),
-              type: model.get('type')
-          });
+           if (model.get('new') === true) {
+               var rowHtml = self.getNewRowHtml(model);
+           } else {
+               var rowHtml = template({
+                    cid: model.cid,
+                    amount: model.get('amount'),
+                    date: Poslovnik.Person.formatDate(model.get('date')),
+                    description: model.get('description'),
+                    type: model.get('type')
+                });
+           }
           
           html += rowHtml;
        });
@@ -81,6 +86,14 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     
     onClickCancelEditRowBtnClick: function() {
         this.collection.fetch();
+    },
+    
+    onAddNewPaymentBtnClick: function() {
+        var model = new Backbone.Model();
+        
+        model.set('new', true);
+        
+        this.collection.add(model);
     },
     
     onSavePaymentBtnClick: function(event) {
@@ -142,6 +155,26 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
             },
             self
         );
+    },
+    
+    getNewRowHtml: function(model) {
+        var id = model.get('id');
+        
+        var row = "<tr data-isnew='1' data-cid='<%= cid %>'>";
+        row += this.getEditRowHtml(model);
+        row += "<td>";
+        row += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;";
+        row += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
+        row += "</td>";
+        row += "</tr>";
+        
+        var template = _.template(row);
+        
+        var rowHtml = template({
+            cid: model.cid,
+        });
+      
+        return rowHtml;
     },
     
     getEditRowHtml: function(model) {
