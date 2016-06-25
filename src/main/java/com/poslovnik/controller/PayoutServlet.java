@@ -6,7 +6,10 @@
 package com.poslovnik.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.poslovnik.exception.NoSuchPersonException;
+import com.poslovnik.gson.GsonWrapper;
+import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
 import com.poslovnik.service.PersonService;
@@ -14,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import javax.persistence.EntityManager;
+import javax.persistence.TransactionRequiredException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -66,18 +70,9 @@ public class PayoutServlet extends HttpServlet {
         
         Collection<Payout> payouts = p.getPayoutCollection();
         
-        for (Payout payout : payouts) {
-            // Remove reference to Person entity
-            // so that we can serialize the object
-            // easily :)
-            
-            payout.setPersonId(null);
-        }
-        
-        Gson gson = new Gson();
+        Gson gson = GsonWrapper.getGson();
         
         String payuotsJsonArray = gson.toJson(payouts);
-        
         
         response.getOutputStream().print(payuotsJsonArray);
     }

@@ -5,6 +5,7 @@
  */
 package com.poslovnik.model.data;
 
+import com.google.gson.annotations.Expose;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -44,25 +45,30 @@ public class Payout implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
+    @Expose
     private Integer id;
     @Basic(optional = false)
     @NotNull
     @Column(name = "amount")
+    @Expose
     private double amount;
     @Basic(optional = false)
     @NotNull
     @Column(name = "date")
     @Temporal(TemporalType.TIMESTAMP)
+    @Expose
     private Date date;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "description")
+    @Expose
     private String description;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 7)
     @Column(name = "type")
+    @Expose
     private String type;
     @JoinColumn(name = "person_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
