@@ -7,6 +7,7 @@ package com.poslovnik.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
 import com.poslovnik.exception.NoSuchPersonException;
 import com.poslovnik.gson.GsonWrapper;
 import com.poslovnik.model.dao.EntityManagerWrapper;
@@ -19,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.TransactionRequiredException;
 import javax.servlet.ServletException;
@@ -64,6 +66,12 @@ public class PayoutServlet extends HttpServlet {
         switch (tip) {
             case ADD:
                 addAction(request, p);
+                break;
+            case EDIT:
+                editAction(request, p);
+                break;
+            case DELETE:
+                deleteAction(request, p);
                 break;
             default:
                 throw new ServletException("Unknown action requested!");
@@ -116,22 +124,87 @@ public class PayoutServlet extends HttpServlet {
     }
 
     private Payout getObjectFromRequest(HttpServletRequest request) throws IOException {
-        Payout p;
+        Payout p = new Payout();
         
         Gson gson = GsonWrapper.getGson();
         
+        PayoutBean bean = new PayoutBean();
+        
         BufferedReader br = new BufferedReader(request.getReader());
         
-        p = gson.fromJson(br.readLine(), Payout.class);
+        bean = gson.fromJson(br.readLine(), PayoutBean.class);
         
-        if (p.getId() == null) {
-            Integer personId = Integer.parseInt(request.getParameter("person_id"));
-            
-            Person person = PersonService.getInstance().findById(personId);
-            
-            p.setPersonId(person);
+        Person person = PersonService.getInstance().findById(bean.getPerson_id());
+        
+        if (bean.getId() != null) {
+            p = person.getPayoutById(bean.getId());
         }
         
+        p.setAmount(bean.getAmount());
+        p.setDate(bean.getDate());
+        p.setType(bean.getType());
+        p.setDescription(bean.getDescription());
+        
+        p.setPersonId(person);
+        
         return p;
+    }
+
+    private void editAction(HttpServletRequest request, Payout p) {
+        PayoutService.getInstance().edit(p);
+        
+        json.put("success", true);
+    }
+    
+    private void deleteAction(HttpServletRequest request, Payout p) {
+        PayoutService.getInstance().delete(p);
+        
+        json.put("success", true);
+    }
+    
+    private class PayoutBean {
+        @Expose
+        private double amount;
+        
+        @Expose
+        private Integer id;
+        
+        @Expose
+        private Date date;
+        
+        @Expose
+        private String description;
+        
+        @Expose
+        private String type;
+        
+        @Expose
+        private Integer person_id;
+
+        public double getAmount() {
+            return amount;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public Integer getPerson_id() {
+            return person_id;
+        }
+
+        public String getType() {
+            return type;
+        }
+        
+        
     }
 }

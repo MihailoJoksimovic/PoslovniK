@@ -8,6 +8,7 @@ package com.poslovnik.model.data;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import javax.ejb.NoSuchEntityException;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -220,6 +221,16 @@ public class Person implements Serializable {
     public void addPayout(Payout payout) {
         payout.setPersonId(this);
         this.getPayoutCollection().add(payout);
+    }
+    
+    public Payout getPayoutById(Integer id) {
+        for (Payout p : getPayoutCollection()) {
+            if (p.getId().equals(id)) {
+                return p;
+            }
+        }
+        
+        throw new NoSuchEntityException();
     }
     
 }

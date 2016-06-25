@@ -7,6 +7,7 @@ package com.poslovnik.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.poslovnik.model.data.Payout;
 
 /**
  *
@@ -17,7 +18,11 @@ public class GsonWrapper {
     
     public static Gson getGson() {
         if (instance == null) {
-            instance = new GsonBuilder().setDateFormat("yyyy-MM-dd").excludeFieldsWithoutExposeAnnotation().create();
+            instance = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd")
+                    .excludeFieldsWithoutExposeAnnotation()
+                    .registerTypeAdapter(Payout.class, new PayoutSerializer())
+                    .create();
         }
         
         return instance;
