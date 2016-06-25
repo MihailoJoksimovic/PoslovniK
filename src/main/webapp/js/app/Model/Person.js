@@ -84,6 +84,16 @@ Poslovnik.PersonModel = Backbone.Model.extend({
         $.post(
                 'logout'
         ).always(callback);
+    },
+    
+    // date must be Date object
+    formatDate: function(date) {
+        var format = this.getDateFormat();
+        return moment(date).format(format)
+    },
+    
+    getDateFormat: function() {
+        return 'DD.MM.YYYY';
     }
 });
 
