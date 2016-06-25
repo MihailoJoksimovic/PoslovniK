@@ -20,6 +20,12 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     },
     
     subRender: function() {
+       if (this.collection.length == 0) {
+           return;
+       }
+       
+       console.log(this.collection.length);
+
        var tbody = this.$el.find('tbody');
        
        var userIsModeratorOrAdmin = Poslovnik.Person.hasModeratorOrAdminPrivileges();

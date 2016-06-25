@@ -1,7 +1,7 @@
 Poslovnik.PayoutCollection = Backbone.Collection.extend({
     person: null,
     
-    initialize: function(options) {
+    initialize: function(data, options) {
         if (!options.person) {
             throw "Missing 'person' argument"
         }

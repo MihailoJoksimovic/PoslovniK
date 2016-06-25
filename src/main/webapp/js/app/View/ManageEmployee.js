@@ -10,7 +10,7 @@ Poslovnik.ManageEmployee = Backbone.View.extend({
        
        this.render();
         
-        var collection = new Poslovnik.PayoutCollection({
+        var collection = new Poslovnik.PayoutCollection([], {
             person: this.person
         });
 
