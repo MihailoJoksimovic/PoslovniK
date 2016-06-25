@@ -63,6 +63,10 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
        });
        
        $(tbody).html(html);
+       
+       this.$el.find('[name=date]').datepicker({
+            altField: this.$el.find('[name=alt_date]')
+        });
     },
     
     onEditPaymentBtnClick: function() {
@@ -224,7 +228,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         
         return row({
             amount: model.get('amount'),
-            formatted_date: Poslovnik.Person.formatDate(model.get('date')),
+            formatted_date: model.get('date') ? Poslovnik.Person.formatDate(model.get('date')) : '',
             date_raw: model.get('date'),
             description: model.get('description')
         });
