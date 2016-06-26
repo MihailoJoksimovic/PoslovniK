@@ -43,6 +43,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
        if (userIsModeratorOrAdmin) {
            template += '<td>';
            template += '<a href="javascript: void(0);" data-cid="<%= cid %>" class="edit-payment glyphicon glyphicon-pencil"></a>';
+           template += "&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
            template += '</td>';
        }
        
@@ -114,7 +115,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
             return;
         }
         
-        model.destroy();
+        model.destroy( { url: "payout?action=delete&id=" + model.get('id') } );
         
         this.collection.remove(model);
             
