@@ -88,6 +88,9 @@ Poslovnik.PersonModel = Backbone.Model.extend({
     
     // date must be Date object
     formatDate: function(date) {
+        if (!date) {
+            return '';
+        }
         var format = this.getDateFormat();
         return moment(date).format(format)
     },

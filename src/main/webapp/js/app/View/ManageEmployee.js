@@ -10,17 +10,35 @@ Poslovnik.ManageEmployee = Backbone.View.extend({
        
        this.render();
         
-        var collection = new Poslovnik.PayoutCollection([], {
+        var payoutsCollection = new Poslovnik.PayoutCollection([], {
             person: this.person
         });
 
         var payoutTableView = new Poslovnik.PayoutTableView({
             el: this.$el.find('#payroll-list'),
-            collection: collection,
+            collection: payoutsCollection,
             person: this.person
         });
         
-        collection.fetch();
+        payoutsCollection.fetch();
+        
+        var vacationsCollection = new Poslovnik.VacationCollection([], {
+            person: this.person
+        });
+
+        var vacationTableView = new Poslovnik.VacationsTableView({
+            el: this.$el.find('#vacations-list'),
+            collection: vacationsCollection,
+            person: this.person
+        });
+        
+        vacationsCollection.fetch();
+        
+        // Add some random data
+        
+        vacationsCollection.add({ date_from: '2016-01-01', date_to: '2016-01-31', status: 'approved'});
+        vacationsCollection.add({ date_from: '2016-02-01', date_to: '2016-02-28', status: 'rejected'});
+        vacationsCollection.add({ date_from: '2016-03-01', date_to: '2016-03-31', status: 'pending'});
 
    },
    
