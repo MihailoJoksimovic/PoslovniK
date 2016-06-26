@@ -253,5 +253,10 @@ public class Person implements Serializable {
         
         throw new NoSuchEntityException();
     }
+
+    public void addVacation(Vacation v) {
+        v.setPersonId(this);
+        this.getVacationCollection().add(v);
+    }
     
 }

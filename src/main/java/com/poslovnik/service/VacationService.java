@@ -72,9 +72,9 @@ public class VacationService implements CrudServiceInterface<Vacation> {
         Person person = v.getPersonId();
         
         // Remove it from the Person's collection
-        Payout managedPayout = person.getPayoutById(v.getId());
+        Vacation managedVacation = person.getVacationById(v.getId());
         
-        person.getPayoutCollection().remove(managedPayout);
+        person.getVacationCollection().remove(managedVacation);
         
         // And remove it from DB
         VacationDAO.getInstance().delete(em, v);

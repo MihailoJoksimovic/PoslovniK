@@ -111,7 +111,7 @@ public class VacationServlet extends HttpServlet {
 
         Person person = PersonService.getInstance().findById(personId);
 
-//        PersonService.getInstance().addPayout(person, p);
+        PersonService.getInstance().addVacation(person, v);
 
         json.put("success", true);
     }
@@ -151,9 +151,9 @@ public class VacationServlet extends HttpServlet {
     private void deleteAction(HttpServletRequest request) {
         Integer id = Integer.parseInt(request.getParameter("id"));
 
-        Payout p = PayoutService.getInstance().findById(id);
+        Vacation v = VacationService.getInstance().findById(id);
 
-        PayoutService.getInstance().delete(p);
+        VacationService.getInstance().delete(v);
 
         json.put("success", true);
     }

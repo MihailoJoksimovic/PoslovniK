@@ -10,6 +10,7 @@ import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
+import com.poslovnik.model.data.Vacation;
 import java.util.List;
 import javax.persistence.EntityManager;
 /**
@@ -100,5 +101,17 @@ public class PersonService {
 
     public void setEm(EntityManager em) {
         this.em = em;
+    }
+
+    public void addVacation(Person person, Vacation v) {
+        if (!getEntityManager().getTransaction().isActive()) {
+            getEntityManager().getTransaction().begin();
+        }
+        
+        person.addVacation(v);
+        
+        getEntityManager().persist(v);
+        
+        getEntityManager().getTransaction().commit();
     }
 }
