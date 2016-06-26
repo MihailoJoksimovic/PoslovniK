@@ -67,6 +67,14 @@ public class PayoutService implements CrudServiceInterface<Payout>{
             em.getTransaction().begin();
         }
         
+        Person person = p.getPersonId();
+        
+        // Remove it from the Person's collection
+        Payout managedPayout = person.getPayoutById(p.getId());
+        
+        person.getPayoutCollection().remove(managedPayout);
+        
+        // And remove it from DB
         PayoutDAO.getInstance().delete(em, p);
         
         em.getTransaction().commit();

@@ -61,8 +61,12 @@ public class PayoutServlet extends HttpServlet {
         String action = request.getParameter("action");
         ActionType tip = ActionType.getForAction(action);
         
-        Payout p = getObjectFromRequest(request);
+        Payout p = new Payout();
         
+        if (tip != tip.DELETE) {
+            p = getObjectFromRequest(request);
+        }
+
         switch (tip) {
             case ADD:
                 addAction(request, p);
@@ -71,7 +75,7 @@ public class PayoutServlet extends HttpServlet {
                 editAction(request, p);
                 break;
             case DELETE:
-                deleteAction(request, p);
+                deleteAction(request);
                 break;
             default:
                 throw new ServletException("Unknown action requested!");
@@ -156,7 +160,11 @@ public class PayoutServlet extends HttpServlet {
         json.put("success", true);
     }
     
-    private void deleteAction(HttpServletRequest request, Payout p) {
+    private void deleteAction(HttpServletRequest request) {
+        Integer id = Integer.parseInt(request.getParameter("id"));
+        
+        Payout p = PayoutService.getInstance().findById(id);
+        
         PayoutService.getInstance().delete(p);
         
         json.put("success", true);
