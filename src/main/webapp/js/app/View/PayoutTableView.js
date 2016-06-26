@@ -1,4 +1,4 @@
-Poslovnik.PayoutTableView = Backbone.View.extend({
+Poslovnik.PayoutTableView = Poslovnik.AbstractView.extend({
     events: {
         'click .edit-payment' : 'onEditPaymentBtnClick',
         'click .save-row' : 'onSavePaymentBtnClick',
@@ -156,7 +156,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         var self = this;
         
         var successFn = function() {
-            self.showSuccess("Payment had been added successfully!");
+            self.showSuccess("Payment has been saved successfully!");
             self.collection.fetch();
         };
 
@@ -234,6 +234,8 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     },
     
     copyDatafromFormToModel: function(model, cid) {
+        var self = this;
+        
         var tr = $('tr[data-cid='+cid+']');
         
         var amount = $(tr).find('input[name=amount]').val();
@@ -241,26 +243,21 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         var type = $(tr).find('select[name=type]').val();
         var description = $(tr).find('input[name=description]').val();
         
+        var allFields = [amount, date, type, description];
+        
+        _.each(allFields, function(field) {
+           if (field.length == 0) {
+               self.showError("All fields are mandatory!");
+               
+               throw "Validation failed!";
+           } 
+        });
+        
         
         model.set('amount', amount);
         model.set('date', date);
         model.set('type', type);
         model.set('description', description);
-    },
-    
-    showSuccess: function(text) {
-        this.hideAllAlerts();
-        $('.alert-success').html(text).removeClass('hidden');
-    },
-    
-    showError: function(text) {
-        this.hideAllAlerts();
-        $('.alert-danger').html(text).removeClass('hidden');
-    },
-    
-    hideAllAlerts: function() {
-        $('.alert').addClass('hidden');
     }
-    
-    
-});
+}, Poslovnik.AlertsView);
+

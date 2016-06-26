@@ -102,6 +102,7 @@
     <script type="text/javascript" src="js/app/Collection/PositionCollection.js"></script>
     <script type="text/javascript" src="js/app/Collection/PayoutCollection.js"></script>
     <script type="text/javascript" src="js/app/Collection/VacationCollection.js"></script>
+    <script type="text/javascript" src="js/app/View/AbstractView.js"></script>
     <script type="text/javascript" src="js/app/View/Home.js"></script>
     <script type="text/javascript" src="js/app/View/Login.js"></script>
     <script type="text/javascript" src="js/app/View/AdminDashboard.js"></script>
