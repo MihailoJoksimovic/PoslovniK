@@ -62,15 +62,15 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var row = "";
         
         row+="<td style='text-align: center;'></td>";
-        row+='<td><input type="email" name="email" value="<%= email %>" /></td>';
-        row+='<td><input type="password" name="password" value="<%= password %>" /></td>';
-        row+='<td><select name="title"><option value="mr" <%= (title == "mr") ? "selected" : ""  %>>mr</option><option value="ms" <%= (title == "ms") ? "selected" : ""  %>>ms</option></select></td>';
-        row+="<td><input type='text' name='first_name' value='<%= first_name %>' /></td>";
-        row+="<td><input type='text' name='last_name' value='<%= last_name %>' /></td>";
+        row+='<td><input type="email" name="email" value="<%= email %>" class="form-control input-md" /></td>';
+        row+='<td><input type="password" name="password" value="<%= password %>" class="form-control input-md" /></td>';
+        row+='<td><select name="title" class="form-control input-md"><option value="mr" <%= (title == "mr") ? "selected" : ""  %>>Mr</option><option value="ms" <%= (title == "ms") ? "selected" : ""  %>>Ms</option></select></td>';
+        row+="<td><input type='text' name='first_name' value='<%= first_name %>' class='form-control input-md' /></td>";
+        row+="<td><input type='text' name='last_name' value='<%= last_name %>' class='form-control input-md' /></td>";
         row+="<td><%= position_html %></td>";
         row+="<td><%= account_type_html %></td>";
         
-        var positionHtml = '<select name="position">';
+        var positionHtml = '<select name="position" class="form-control input-md">';
         
         Poslovnik.Positions.each(function(position) {
             var selected = person.get('position_name') == position.get('name') ? 'selected' : '';
@@ -79,7 +79,7 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         });
         positionHtml += "</select>";
         
-        var accountTypeHtml = '<select name="account_type">';
+        var accountTypeHtml = '<select name="account_type" class="form-control input-md">';
         accountTypeHtml += '<option value="'+Poslovnik.PermissionLevels.ADMINISTRATOR+'" '+(person.get('permission_level') == Poslovnik.PermissionLevels.ADMINISTRATOR ? 'selected' : '')+'>Administrator</option>';
         accountTypeHtml += '<option value="'+Poslovnik.PermissionLevels.MODERATOR+'" '+(person.get('permission_level') == Poslovnik.PermissionLevels.MODERATOR ? 'selected' : '')+'>Moderator</option>';
         accountTypeHtml += '<option value="'+Poslovnik.PermissionLevels.REGULAR_USER+'" '+(person.get('permission_level') == Poslovnik.PermissionLevels.REGULAR_USER ? 'selected' : '')+'>Employee</option>';
@@ -107,8 +107,8 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var row = "<tr data-isnew='1' data-cid='<%= cid %>'>";
         row += this.getPersonEditRowHtml(person);
         row += "<td>";
-        row += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;";
-        row += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
+        row += "<a href='javascript: void(0);' style='' data-cid='<%= cid %>' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;";
+        row += "<a href='javascript: void(0);' style='' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
         row += "</td>";
         row += "</tr>";
         
@@ -122,11 +122,11 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
     },
     
     getExistingPersonRowHtml: function(person) {
-        var template = "<tr data-cid='<%= cid %>'><td style='text-align: center;'><input name='selected_person' data-id='<%= id %>' type='radio' /></td><td><%= email %></td><td><em>(hidden)</em><td><%= title %></td><td><%= first_name %></td><td><%= last_name %></td><td><%= position %></td><td><%= account_type %></td>";
+        var template = "<tr data-cid='<%= cid %>'><td style='text-align: center;'></td><td><%= email %></td><td><em>(hidden)</em><td><%= title %></td><td><%= first_name %></td><td><%= last_name %></td><td><%= position %></td><td><%= account_type %></td>";
            template += "<td>";
            template += "<a data-cid='<%= cid %>' href='javascript: void(0);' class='edit-row glyphicon glyphicon-pencil'></a>&nbsp;";
-           template += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='manage-row glyphicon glyphicon-search' data-cid='<%= cid %>'></a>&nbsp;";
-           template += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove' data-cid='<%= cid %>'></a>";
+           template += "<a href='javascript: void(0);' style='' data-cid='<%= cid %>' class='manage-row glyphicon glyphicon-search' data-cid='<%= cid %>'></a>&nbsp;";
+           template += "<a href='javascript: void(0);' style='' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove' data-cid='<%= cid %>'></a>";
            template += "</td>";
            template += "</tr>";
             
@@ -248,7 +248,7 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         var row = this.$el.find('tr[data-cid='+cid+']');
         
         var rowHtml = this.getPersonEditRowHtml(model);
-        rowHtml += "<td><a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='cancel-edit-row glyphicon glyphicon-remove'></a></td>";
+        rowHtml += "<td><a href='javascript: void(0);' style='' data-cid='"+cid+"' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;<a href='javascript: void(0);' style='' data-cid='"+cid+"' class='cancel-edit-row glyphicon glyphicon-remove'></a></td>";
         
         row.html(rowHtml);
     },
