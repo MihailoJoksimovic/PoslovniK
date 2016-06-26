@@ -61,6 +61,6 @@ Poslovnik.ManageEmployee = Backbone.View.extend({
    },
    
    subRender: function() {
-       
+       this.$el.find('.employee-full-name').html(this.person.getFullname());
    }
 });

@@ -101,6 +101,10 @@ Poslovnik.PersonModel = Backbone.Model.extend({
     
     getDateFormat: function() {
         return 'DD.MM.YYYY';
+    },
+    
+    getFullname: function() {
+        return this.get("first_name") + ' ' + this.get('last_name');
     }
 });
 
