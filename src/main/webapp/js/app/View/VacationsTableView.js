@@ -1,4 +1,4 @@
-Poslovnik.VacationsTableView = Backbone.View.extend({
+Poslovnik.VacationsTableView = Poslovnik.AbstractView.extend({
     events: {
         'click .edit-row' : 'onEditPaymentBtnClick',
         'click .save-row' : 'onSaveRowBtnClick',
@@ -103,7 +103,7 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
         
         var rowHtml = this.getEditRowHtml(model);
         
-        rowHtml += "<td><a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='"+cid+"' class='cancel-edit-row glyphicon glyphicon-remove'></a></td>";
+        rowHtml += "<td><a href='javascript: void(0);' data-cid='"+cid+"' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;<a href='javascript: void(0);' style='' data-cid='"+cid+"' class='cancel-edit-row glyphicon glyphicon-remove'></a></td>";
 
         $(row).html(rowHtml);
         
@@ -210,8 +210,8 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
         var row = "<tr data-isnew='1' data-cid='<%= cid %>'>";
         row += this.getEditRowHtml(model);
         row += "<td>";
-        row += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;";
-        row += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
+        row += "<a href='javascript: void(0);' style='' data-cid='<%= cid %>' class='save-row glyphicon glyphicon-floppy-disk'></a>&nbsp;";
+        row += "<a href='javascript: void(0);' style='' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
         row += "</td>";
         row += "</tr>";
         
@@ -265,31 +265,28 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
     },
     
     copyDatafromFormToModel: function(model, cid) {
+        var self = this;
+        
         var tr = $('tr[data-cid='+cid+']');
         
         var date_from = $(tr).find('input[name=alt_date_from]').val(); // alt_date holds date in yyyy-mm-dd format
         var date_to = $(tr).find('input[name=alt_date_to]').val(); // alt_date holds date in yyyy-mm-dd format
         var status = $(tr).find('select[name=status]').val();
         
+        var allFields = [date_from, date_to, status];
+        
+        _.each(allFields, function(field) {
+            if (field.length == 0) {
+               self.showError("All fields are mandatory!");
+               
+               throw "Validation failed!";
+            }
+        });
+        
         
         model.set('date_from', date_from);
         model.set('date_to', date_to);
         model.set('status', status);
-    },
-    
-    showSuccess: function(text) {
-        this.hideAllAlerts();
-        $('.alert-success').html(text).removeClass('hidden');
-    },
-    
-    showError: function(text) {
-        this.hideAllAlerts();
-        $('.alert-danger').html(text).removeClass('hidden');
-    },
-    
-    hideAllAlerts: function() {
-        $('.alert').addClass('hidden');
     }
-    
     
 });
