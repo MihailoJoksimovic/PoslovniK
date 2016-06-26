@@ -221,7 +221,12 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
         var rowVacationStatuses = '<td><select name="status">';
         
         _.each(vacationStatuses, function(val) {
-           rowVacationStatuses += '<option value="'+val+'">'+val+'</option>'; 
+           var selected = "";
+           if (val == model.get('status')) {
+               selected = "selected";
+           }
+            
+           rowVacationStatuses += '<option value="'+val+'" '+selected+'>'+val+'</option>'; 
         });
         
         rowVacationStatuses += '</select></td>';
