@@ -7,6 +7,7 @@ package com.poslovnik.service;
 
 import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PayoutDAO;
+import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.dao.VacationDAO;
 import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
@@ -34,6 +35,10 @@ public class VacationService implements CrudServiceInterface<Vacation> {
     @Override
     public Vacation findById(Integer id) {
         return em.find(Vacation.class, id);
+    }
+    
+    public List<Vacation> findByUser(Person p) {
+        return VacationDAO.getInstance().findAllForPerson(em, p);
     }
    
 
@@ -79,7 +84,7 @@ public class VacationService implements CrudServiceInterface<Vacation> {
         // Remove it from the Person's collection
         
         person.getVacationCollection().remove(v);
-
+        
         em.getTransaction().commit();
     }
 }

@@ -5,8 +5,11 @@
  */
 package com.poslovnik.model.dao;
 
+import com.poslovnik.model.data.Person;
 import com.poslovnik.model.data.Vacation;
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -20,6 +23,12 @@ public class VacationDAO {
 
     public static VacationDAO getInstance() {
         return instance;
+    }
+    
+    public List<Vacation> findAllForPerson (EntityManager em, Person p) {
+        Query query = em.createQuery("SELECT v FROM Vacation v WHERE v.personId = :person_id");
+        query.setParameter("person_id", p);
+        return query.getResultList();
     }
     
     public void add(EntityManager em, Vacation v) {

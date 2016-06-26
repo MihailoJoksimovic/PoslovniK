@@ -97,7 +97,7 @@ public class VacationServlet extends HttpServlet {
             return;
         }
 
-        Collection<Vacation> vacations  = p.getVacationCollection();
+        Collection<Vacation> vacations  = VacationService.getInstance().findByUser(p);
 
         Gson gson = GsonWrapper.getGson();
 
