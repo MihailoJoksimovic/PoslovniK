@@ -155,7 +155,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         var self = this;
         
         var successFn = function() {
-            self.showSuccess("Paymanet had been added successfully!");
+            self.showSuccess("Payment had been added successfully!");
             self.collection.fetch();
         };
 

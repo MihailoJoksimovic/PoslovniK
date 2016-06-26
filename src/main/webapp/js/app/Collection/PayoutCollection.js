@@ -6,6 +6,10 @@ Poslovnik.PayoutCollection = Backbone.Collection.extend({
             throw "Missing 'person' argument"
         }
         
+        if (!options.comparator) {
+            this.comparator = 'date';
+        }
+        
         this.person = options.person;
     },
     

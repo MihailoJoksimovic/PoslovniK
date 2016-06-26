@@ -5,13 +5,14 @@ Poslovnik.EmployeeDashboard = Backbone.View.extend({
         
         var person = Poslovnik.Person;
         
-        var collection = new Poslovnik.PayoutCollection({
+        var collection = new Poslovnik.PayoutCollection([], {
             person: person
         });
 
         var payoutTableView = new Poslovnik.PayoutTableView({
             el: this.$el.find('#payroll-list'),
-            collection: collection
+            collection: collection,
+            person: person
         });
         
         collection.fetch();
