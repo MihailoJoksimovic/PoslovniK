@@ -45,11 +45,11 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
        if (userIsModeratorOrAdmin) {
            template += '<td>';
            template += '<a href="javascript: void(0);" data-cid="<%= cid %>" class="edit-row glyphicon glyphicon-pencil"></a>';
-           template += "&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
+           template += "&nbsp;<a href='javascript: void(0);' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
            template += '</td>';
        } else {
             template += '<td>';
-            template += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove <%= hide_remove_vacation %>'></a>";
+            template += "<a href='javascript: void(0);' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove <%= hide_remove_vacation %>'></a>";
             template += '</td>';
             
        }
@@ -149,7 +149,7 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
         model.set('person_id', this.person.get('id'));
         model.set('new', true);
         
-        this.collection.add(model);
+        this.collection.add(model, { at: 0 });
     },
     
     onSaveRowBtnClick: function(event) {
@@ -226,15 +226,15 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
     
     getEditRowHtml: function(model) {
         var row = '';
-        row +='<td><input required type="text" name="date_from" placeholder="From ..." value="<%= date_from %>" /><input type="hidden" name="alt_date_from" value="<%= date_from_raw %>" /></td>';
-        row +='<td><input required type="text" name="date_to" placeholder="To ..." value="<%= date_to %>" /><input type="hidden" name="alt_date_to" value="<%= date_to_raw %>" /></td>';
+        row +='<td><input required type="text" name="date_from" placeholder="From ..." class="form-control input-lg" value="<%= date_from %>" /><input type="hidden" name="alt_date_from" value="<%= date_from_raw %>" /></td>';
+        row +='<td><input required type="text" name="date_to" placeholder="To ..." class="form-control input-lg" value="<%= date_to %>" /><input type="hidden" name="alt_date_to" value="<%= date_to_raw %>" /></td>';
         
         if (Poslovnik.Person.hasModeratorOrAdminPrivileges()) {
             // Allow editing only if user is Moderator or Admin
             
             var vacationStatuses = ['pending', 'approved', 'rejected'];
         
-            var rowVacationStatuses = '<td><select name="status">';
+            var rowVacationStatuses = '<td><select name="status" class="form-control input-lg">';
 
             _.each(vacationStatuses, function(val) {
                var selected = "";
