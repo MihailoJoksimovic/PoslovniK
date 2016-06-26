@@ -5,17 +5,29 @@ Poslovnik.EmployeeDashboard = Backbone.View.extend({
         
         var person = Poslovnik.Person;
         
-        var collection = new Poslovnik.PayoutCollection([], {
+        var payoutCollection = new Poslovnik.PayoutCollection([], {
             person: person
         });
 
         var payoutTableView = new Poslovnik.PayoutTableView({
             el: this.$el.find('#payroll-list'),
-            collection: collection,
+            collection: payoutCollection,
             person: person
         });
         
-        collection.fetch();
+        payoutCollection.fetch();
+        
+        var vacationCollection = new Poslovnik.VacationCollection([], {
+            person: person
+        });
+
+        var vacationTableView = new Poslovnik.VacationsTableView({
+            el: this.$el.find('#vacations-list'),
+            collection: vacationCollection,
+            person: person
+        });
+        
+        vacationCollection.fetch();
     },
 
     render: function() {

@@ -73,8 +73,12 @@ Poslovnik.PersonModel = Backbone.Model.extend({
     },
     
     logOut: function() {
+        var self = this;
+        
         var callback = function(data, textStatus, jqXHR) {
             if (data && data.success === true) {
+                self.clear();
+                
                 Poslovnik.Router.navigate('login', { trigger: true } );
                 
                 return;

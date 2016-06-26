@@ -20,7 +20,9 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
     },
     
     render: function() {
-        if (!Poslovnik.Person.hasModeratorOrAdminPrivileges()) {
+        if (Poslovnik.Person.hasModeratorOrAdminPrivileges()) {
+            this.$el.find('.show-in-employee-view').addClass('hidden');
+        } else {
             this.$el.find('.show-in-admin-view').addClass('hidden');
         }
         
@@ -45,6 +47,11 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
            template += '<a href="javascript: void(0);" data-cid="<%= cid %>" class="edit-row glyphicon glyphicon-pencil"></a>';
            template += "&nbsp;<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove'></a>";
            template += '</td>';
+       } else {
+            template += '<td>';
+            template += "<a href='javascript: void(0);' style='font-size: 16px' data-cid='<%= cid %>' class='delete-row glyphicon glyphicon-remove <%= hide_remove_vacation %>'></a>";
+            template += '</td>';
+            
        }
        
        template += '</tr>';
@@ -57,11 +64,17 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
            if (model.get('new') === true) {
                var rowHtml = self.getNewRowHtml(model);
            } else {
+               var hideRemoveVacation = "";
+               if (!Poslovnik.Person.hasModeratorOrAdminPrivileges() && model.get('status') != 'pending') {
+                   hideRemoveVacation = "hidden";
+               }
+               
                var rowHtml = template({
                     cid: model.cid,
                     date_from: Poslovnik.Person.formatDate(model.get('date_from')),
                     date_to: Poslovnik.Person.formatDate(model.get('date_to')),
-                    status: model.get('status')
+                    status: model.get('status'),
+                    hide_remove_vacation: hideRemoveVacation
                 });
            }
           
@@ -213,23 +226,31 @@ Poslovnik.VacationsTableView = Backbone.View.extend({
     
     getEditRowHtml: function(model) {
         var row = '';
-        row +='<td><input required type="text" name="date_from" value="<%= date_from %>" /><input type="hidden" name="alt_date_from" value="<%= date_from_raw %>" /></td>';
-        row +='<td><input required type="text" name="date_to" value="<%= date_to %>" /><input type="hidden" name="alt_date_to" value="<%= date_to_raw %>" /></td>';
+        row +='<td><input required type="text" name="date_from" placeholder="From ..." value="<%= date_from %>" /><input type="hidden" name="alt_date_from" value="<%= date_from_raw %>" /></td>';
+        row +='<td><input required type="text" name="date_to" placeholder="To ..." value="<%= date_to %>" /><input type="hidden" name="alt_date_to" value="<%= date_to_raw %>" /></td>';
         
-        var vacationStatuses = ['pending', 'approved', 'rejected'];
-        
-        var rowVacationStatuses = '<td><select name="status">';
-        
-        _.each(vacationStatuses, function(val) {
-           var selected = "";
-           if (val == model.get('status')) {
-               selected = "selected";
-           }
+        if (Poslovnik.Person.hasModeratorOrAdminPrivileges()) {
+            // Allow editing only if user is Moderator or Admin
             
-           rowVacationStatuses += '<option value="'+val+'" '+selected+'>'+val+'</option>'; 
-        });
+            var vacationStatuses = ['pending', 'approved', 'rejected'];
         
-        rowVacationStatuses += '</select></td>';
+            var rowVacationStatuses = '<td><select name="status">';
+
+            _.each(vacationStatuses, function(val) {
+               var selected = "";
+               if (val == model.get('status')) {
+                   selected = "selected";
+               }
+
+               rowVacationStatuses += '<option value="'+val+'" '+selected+'>'+val+'</option>'; 
+            });
+
+            rowVacationStatuses += '</select></td>';
+        } else {
+            var rowVacationStatuses = "<td></td>";
+        }
+        
+        
         
         row += rowVacationStatuses;
         
