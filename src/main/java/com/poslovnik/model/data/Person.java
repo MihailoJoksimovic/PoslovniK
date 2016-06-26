@@ -40,6 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")})
 public class Person implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
+    private Collection<Vacation> vacationCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
     private Collection<Payout> payoutCollection;
     private static final long serialVersionUID = 1L;
     @Id
@@ -227,6 +229,25 @@ public class Person implements Serializable {
         for (Payout p : getPayoutCollection()) {
             if (p.getId().equals(id)) {
                 return p;
+            }
+        }
+        
+        throw new NoSuchEntityException();
+    }
+
+    @XmlTransient
+    public Collection<Vacation> getVacationCollection() {
+        return vacationCollection;
+    }
+
+    public void setVacationCollection(Collection<Vacation> vacationCollection) {
+        this.vacationCollection = vacationCollection;
+    }
+
+    public Vacation getVacationById(Integer id) {
+        for (Vacation v : getVacationCollection()) {
+            if (v.getId().equals(id)) {
+                return v;
             }
         }
         

@@ -36,9 +36,9 @@ Poslovnik.ManageEmployee = Backbone.View.extend({
         
         // Add some random data
         
-        vacationsCollection.add({ date_from: '2016-01-01', date_to: '2016-01-31', status: 'approved'});
-        vacationsCollection.add({ date_from: '2016-02-01', date_to: '2016-02-28', status: 'rejected'});
-        vacationsCollection.add({ date_from: '2016-03-01', date_to: '2016-03-31', status: 'pending'});
+//        vacationsCollection.add({ date_from: '2016-01-01', date_to: '2016-01-31', status: 'approved'});
+//        vacationsCollection.add({ date_from: '2016-02-01', date_to: '2016-02-28', status: 'rejected'});
+//        vacationsCollection.add({ date_from: '2016-03-01', date_to: '2016-03-31', status: 'pending'});
 
    },
    

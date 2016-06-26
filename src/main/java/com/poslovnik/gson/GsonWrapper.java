@@ -8,6 +8,7 @@ package com.poslovnik.gson;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.poslovnik.model.data.Payout;
+import com.poslovnik.model.data.Vacation;
 
 /**
  *
@@ -22,6 +23,7 @@ public class GsonWrapper {
                     .setDateFormat("yyyy-MM-dd")
                     .excludeFieldsWithoutExposeAnnotation()
                     .registerTypeAdapter(Payout.class, new PayoutSerializer())
+                    .registerTypeAdapter(Vacation.class, new VacationSerializer())
                     .create();
         }
         
