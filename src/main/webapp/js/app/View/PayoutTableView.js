@@ -129,7 +129,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         model.set('person_id', this.person.get('id'));
         model.set('new', true);
         
-        this.collection.add(model);
+        this.collection.add(model, { at: 0 });
     },
     
     onSavePaymentBtnClick: function(event) {
@@ -206,12 +206,12 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
     
     getEditRowHtml: function(model) {
         var row = '';
-        row +='<td><input required type="number" name="amount" value="<%= amount %>" /></td>';
-        row +='<td><input required type="text" name="date" value="<%= formatted_date %>" /><input type="hidden" name="alt_date" value="<%= date_raw %>" /></td>';
+        row +='<td><input required type="number" name="amount" placeholder="Enter payment amount here ..." value="<%= amount %>" class="form-control" /></td>';
+        row +='<td><input required type="text" name="date" placeholder="Enter payment date here ..." value="<%= formatted_date %>" class="form-control" /><input type="hidden" name="alt_date" value="<%= date_raw %>" /></td>';
         
         var paymentTypes = ['salary', 'bonus', 'other'];
         
-        var rowPaymentTypes = '<td><select name="type">';
+        var rowPaymentTypes = '<td><select name="type" class="form-control">';
         
         _.each(paymentTypes, function(val) {
            rowPaymentTypes += '<option value="'+val+'">'+val+'</option>'; 
@@ -221,7 +221,7 @@ Poslovnik.PayoutTableView = Backbone.View.extend({
         
         row += rowPaymentTypes;
         
-        row +='<td><input required type="text" name="description" value="<%= description %>" /></td>';
+        row +='<td><input required type="text" name="description" placeholder="Enter payment description here (e.g. Salary for June)" value="<%= description %>" class="form-control" /></td>';
         
         row = _.template(row);
         
