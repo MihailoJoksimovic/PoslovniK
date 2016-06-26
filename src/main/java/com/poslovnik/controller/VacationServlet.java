@@ -108,10 +108,8 @@ public class VacationServlet extends HttpServlet {
 
     private void addAction(HttpServletRequest request, Vacation v) throws IOException {
         Integer personId = Integer.parseInt(request.getParameter("person_id"));
-
-        Person person = PersonService.getInstance().findById(personId);
-
-        PersonService.getInstance().addVacation(person, v);
+        
+        VacationService.getInstance().add(v);
 
         json.put("success", true);
     }

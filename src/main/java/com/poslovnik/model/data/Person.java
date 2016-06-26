@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")})
 public class Person implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId", orphanRemoval=true)
     private Collection<Vacation> vacationCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
     private Collection<Payout> payoutCollection;

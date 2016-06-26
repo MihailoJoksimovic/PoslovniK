@@ -49,6 +49,9 @@ public class VacationService implements CrudServiceInterface<Vacation> {
         }
 
         em.persist(p);
+        
+        p.getPersonId().addVacation(p);
+
         em.getTransaction().commit();
     }
 
@@ -71,14 +74,12 @@ public class VacationService implements CrudServiceInterface<Vacation> {
         
         Person person = v.getPersonId();
         
-        // Remove it from the Person's collection
-        Vacation managedVacation = person.getVacationById(v.getId());
-        
-        person.getVacationCollection().remove(managedVacation);
-        
-        // And remove it from DB
         VacationDAO.getInstance().delete(em, v);
         
+        // Remove it from the Person's collection
+        
+        person.getVacationCollection().remove(v);
+
         em.getTransaction().commit();
     }
 }

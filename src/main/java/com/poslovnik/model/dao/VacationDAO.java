@@ -33,8 +33,8 @@ public class VacationDAO {
     }
     
     public void delete(EntityManager em, Vacation v) {
-        Vacation merged = em.merge(v);
+//        Vacation merged = em.merge(v);
         
-        em.remove(merged);
+        em.remove(v);
     }
 }
