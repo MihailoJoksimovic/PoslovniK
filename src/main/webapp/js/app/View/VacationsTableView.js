@@ -271,10 +271,19 @@ Poslovnik.VacationsTableView = Poslovnik.AbstractView.extend({
         
         var date_from = $(tr).find('input[name=alt_date_from]').val(); // alt_date holds date in yyyy-mm-dd format
         var date_to = $(tr).find('input[name=alt_date_to]').val(); // alt_date holds date in yyyy-mm-dd format
-        var status = $(tr).find('select[name=status]').val();
         
-        var allFields = [date_from, date_to, status];
+        if (Poslovnik.Person.hasModeratorOrAdminPrivileges()) {
+            var status = $(tr).find('select[name=status]').val();
+        } else {
+            var status = "pending";
+        }
         
+        var allFields = [date_from, date_to];
+        
+        if (Poslovnik.Person.hasModeratorOrAdminPrivileges()) {
+            allFields.push("status");
+        }
+
         _.each(allFields, function(field) {
             if (field.length == 0) {
                self.showError("All fields are mandatory!");
