@@ -5,26 +5,21 @@
  */
 package com.poslovnik.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
-import com.poslovnik.exception.NoSuchPersonException;
+import com.poslovnik.exception.ValidationException;
 import com.poslovnik.gson.GsonWrapper;
-import com.poslovnik.model.data.Payout;
-import com.poslovnik.model.data.Person;
 import com.poslovnik.model.data.Vacation;
-import com.poslovnik.service.PayoutService;
-import com.poslovnik.service.PersonService;
 import com.poslovnik.service.VacationService;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
+import com.google.gson.Gson;
+import java.text.ParseException;
+import java.util.Collection;
+
 
 /**
  *
@@ -32,169 +27,82 @@ import org.json.JSONObject;
  */
 public class VacationServlet extends HttpServlet {
 
-    JSONObject json = new JSONObject();
-
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-
-        String action = request.getParameter("action");
-        ActionType tip = ActionType.getForAction(action);
-
-        switch (tip) {
-            case LIST:
-                listAction(request, response);
-                break;
-            default:
-                response.sendError(400, "Bad request - unknown action requested");
-
-                return;
-        }
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // For now - only one method is supported trough GET and that is LIST ;)
+        listAction(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        ActionType tip = ActionType.getForAction(action);
-
-        Vacation v = new Vacation();
-
-        if (tip != tip.DELETE) {
-            v = getObjectFromRequest(request);
-        }
-
-        switch (tip) {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String action = req.getParameter("action");
+        ActionType actionType = ActionType.getForAction(action);
+        
+        switch (actionType) {
             case ADD:
-                addAction(request, v);
+                addAction(req, resp);
                 break;
             case EDIT:
-                editAction(request, v);
+                editAction(req, resp);
                 break;
             case DELETE:
-                deleteAction(request);
+                deleteAction(req, resp);
                 break;
-            default:
-                throw new ServletException("Unknown action requested!");
         }
-
-        response.getWriter().print(json.toString());
+    }
+    
+    private void listAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject responseJson = new JSONObject();
+        
+        Collection<Vacation> vacations = VacationService.getInstance().getVacationListFromRequest(req);
+        
+        String output = GsonWrapper.getGson().toJson(vacations);
+        
+        resp.getOutputStream().print(output);
     }
 
-    private void listAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Person p;
-
+    private void addAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject responseJson = new JSONObject();
+        
         try {
-            Integer personId = Integer.parseInt(request.getParameter("id"));
-
-            p = PersonService.getInstance().findById(personId);
-
-            if (p == null) {
-                throw new NoSuchPersonException();
-            }
-        } catch (NumberFormatException | NoSuchPersonException ex) {
-            response.sendError(400, "Bad request - missing/invalid person ID");
-
-            return;
-        }
-
-        Collection<Vacation> vacations  = VacationService.getInstance().findByUser(p);
-
-        Gson gson = GsonWrapper.getGson();
-
-        String vacationsJsonArray = gson.toJson(vacations);
-
-        response.getOutputStream().print(vacationsJsonArray);
-    }
-
-    private void addAction(HttpServletRequest request, Vacation v) throws IOException {
-        Integer personId = Integer.parseInt(request.getParameter("person_id"));
+            Vacation vacation = VacationService.getInstance().createEntityFromRequest(req);
         
-        VacationService.getInstance().add(v);
+            Gson gson = GsonWrapper.getGson();
 
-        json.put("success", true);
-    }
+            String output = gson.toJson(vacation, Vacation.class);
 
-    private Vacation getObjectFromRequest(HttpServletRequest request) throws IOException {
-        Vacation v = new Vacation();
-
-        Gson gson = GsonWrapper.getGson();
-
-        VacationBean bean = new VacationBean();
-
-        BufferedReader br = new BufferedReader(request.getReader());
-
-        bean = gson.fromJson(br.readLine(), VacationBean.class);
-
-        Person person = PersonService.getInstance().findById(bean.getPerson_id());
-
-        if (bean.getId() != null) {
-            v = person.getVacationById(bean.getId());
+            resp.getOutputStream().print(output);
+        } catch (IOException ex) {
+            resp.sendError(500, "Unknown error occurred (IOException)");
+        } catch (ParseException ex) {
+            resp.sendError(400, "Invalid request received (malformed JSON?)");
         }
-
-        v.setDateFrom(bean.getDate_from());
-        v.setDateTo(bean.getDate_to());
-        v.setStatus(bean.getStatus());
-
-        v.setPersonId(person);
-
-        return v;
     }
 
-    private void editAction(HttpServletRequest request, Vacation v) {
-        VacationService.getInstance().edit(v);
-
-        json.put("success", true);
-    }
-
-    private void deleteAction(HttpServletRequest request) {
-        Integer id = Integer.parseInt(request.getParameter("id"));
-
-        Vacation v = VacationService.getInstance().findById(id);
-
-        VacationService.getInstance().delete(v);
-
-        json.put("success", true);
-    }
-
-    private class VacationBean {
-;
-
-        @Expose
-        private Integer id;
-
-        @Expose
-        private Date date_from;
+    private void editAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject responseJson = new JSONObject();
         
-        @Expose
-        private Date date_to;
-
-        @Expose
-        private String status;
-
-        @Expose
-        private Integer person_id;
-
-        public Integer getId() {
-            return id;
-        }
-
-        public Date getDate_from() {
-            return date_from;
-        }
-
-        public Date getDate_to() {
-            return date_to;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public Integer getPerson_id() {
-            return person_id;
-        }
-
+        try {
+            Vacation vacation = VacationService.getInstance().editEntityFromRequest(req);
         
+            Gson gson = GsonWrapper.getGson();
 
+            String output = gson.toJson(vacation, Vacation.class);
+
+            resp.getOutputStream().print(output);
+        } catch (IOException ex) {
+            resp.sendError(500, "Unknown error occurred (IOException)");
+        }
     }
+
+    private void deleteAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {        
+        try {
+            VacationService.getInstance().removeEntityFromRequest(req);
+
+            resp.getOutputStream().print(new JSONObject("{success:true}").toString());
+        } catch (IOException ex) {
+            resp.sendError(500, "Unknown error occurred (IOException)");
+        }
+    }
+    
 }

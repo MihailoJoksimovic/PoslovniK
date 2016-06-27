@@ -33,7 +33,7 @@ Poslovnik.VacationsTableView = Poslovnik.AbstractView.extend({
        if (this.collection.length === 0) {
            return;
        }
-       
+              
        var self = this;
        
        var tbody = this.$el.find('tbody');
@@ -177,6 +177,7 @@ Poslovnik.VacationsTableView = Poslovnik.AbstractView.extend({
         
         var successFn = function() {
             self.showSuccess("Vacation request has been submitted successfully.");
+            self.collection.reset();
             self.collection.fetch();
         };
 

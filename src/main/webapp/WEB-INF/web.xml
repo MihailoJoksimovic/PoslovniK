@@ -17,6 +17,10 @@
         <servlet-class>com.poslovnik.controller.PayoutServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>VacationServletOld</servlet-name>
+        <servlet-class>com.poslovnik.controller.VacationServletOld</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>VacationServlet</servlet-name>
         <servlet-class>com.poslovnik.controller.VacationServlet</servlet-class>
     </servlet>
