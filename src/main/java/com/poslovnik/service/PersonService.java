@@ -49,7 +49,11 @@ public class PersonService {
         List<Person> persons = new ArrayList<>();
         
         try {
+            em.getTransaction().begin();
+            
             persons = PersonDAO.getInstance().findAll(em);
+            
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -73,19 +77,6 @@ public class PersonService {
             em.close();
         }
 
-    }
-        
-    public void addPayout(Person p, Payout payout) {
-        
-        if (!getEntityManager().getTransaction().isActive()) {
-            getEntityManager().getTransaction().begin();
-        }
-        
-        p.addPayout(payout);
-        
-        getEntityManager().persist(payout);
-        
-        getEntityManager().getTransaction().commit();
     }
     
     public void edit(Person p) throws ValidationException {
@@ -128,17 +119,5 @@ public class PersonService {
         EntityManager em = EntityManagerWrapper.getEntityManager();
         
         return em;
-    }
-
-    public void addVacation(Person person, Vacation v) {
-        if (!getEntityManager().getTransaction().isActive()) {
-            getEntityManager().getTransaction().begin();
-        }
-        
-        person.addVacation(v);
-        
-        getEntityManager().persist(v);
-        
-        getEntityManager().getTransaction().commit();
     }
 }
