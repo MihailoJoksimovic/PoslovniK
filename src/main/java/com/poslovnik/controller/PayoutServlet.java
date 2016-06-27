@@ -6,28 +6,19 @@
 package com.poslovnik.controller;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-import com.poslovnik.exception.NoSuchPersonException;
 import com.poslovnik.gson.GsonWrapper;
-import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.data.Payout;
-import com.poslovnik.model.data.Person;
-import com.poslovnik.model.data.Person;
+import com.poslovnik.model.data.Vacation;
 import com.poslovnik.service.PayoutService;
-import com.poslovnik.service.PersonService;
-import java.io.BufferedReader;
+import com.poslovnik.service.VacationService;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.util.Collection;
-import java.util.Date;
-import javax.persistence.EntityManager;
-import javax.persistence.TransactionRequiredException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -35,182 +26,83 @@ import org.json.JSONObject;
  * @author mixa
  */
 public class PayoutServlet extends HttpServlet {
-    
-    JSONObject json = new JSONObject();
 
+    
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        
-        String action = request.getParameter("action");
-        ActionType tip = ActionType.getForAction(action);
-        
-        switch (tip) {
-            case LIST:
-                listAction(request, response);
-                break;
-            default:
-                response.sendError(400, "Bad request - unknown action requested");
-                
-                return;
-        }
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // For now - only one method is supported trough GET and that is LIST ;)
+        listAction(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        ActionType tip = ActionType.getForAction(action);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String action = req.getParameter("action");
+        ActionType actionType = ActionType.getForAction(action);
         
-        Payout p = new Payout();
-        
-        if (tip != tip.DELETE) {
-            p = getObjectFromRequest(request, tip);
-        }
-
-        switch (tip) {
+        switch (actionType) {
             case ADD:
-                addAction(request, p);
+                addAction(req, resp);
                 break;
             case EDIT:
-                editAction(request, p);
+                editAction(req, resp);
                 break;
             case DELETE:
-                deleteAction(request);
+                deleteAction(req, resp);
                 break;
-            default:
-                throw new ServletException("Unknown action requested!");
         }
-        
-        response.getWriter().print(json.toString());
-        
-//        try {
-//            EntityManagerWrapper.getEntityManager().flush();
-//        } catch (TransactionRequiredException ex) {
-//            // ..
-//        }
-        
     }
     
-    private void listAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Person p;
+    private void listAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject responseJson = new JSONObject();
+        
+        Collection<Payout> payouts = PayoutService.getInstance().getPayoutListFromRequest(req);
+        
+        String output = GsonWrapper.getGson().toJson(payouts);
+        
+        resp.getOutputStream().print(output);
+    }
+
+    private void addAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject responseJson = new JSONObject();
         
         try {
-            Integer personId = Integer.parseInt(request.getParameter("id"));
-            
-            p = PersonService.getInstance().findById(personId);
-            
-            if (p == null) {
-                throw new NoSuchPersonException();
-            }
-            
-            Collection<Payout> payouts = PayoutService.getInstance().findAllForPerson(p);
+            Payout payout = PayoutService.getInstance().createEntityFromRequest(req);
         
             Gson gson = GsonWrapper.getGson();
 
-            String payuotsJsonArray = gson.toJson(payouts);
+            String output = gson.toJson(payout, Payout.class);
 
-            response.getOutputStream().print(payuotsJsonArray);
-        } catch (NumberFormatException | NoSuchPersonException ex) {
-            response.sendError(400, "Bad request - missing/invalid person ID");
-            
-            return;
+            resp.getOutputStream().print(output);
+        } catch (IOException ex) {
+            resp.sendError(500, "Unknown error occurred (IOException)");
+        } catch (ParseException ex) {
+            resp.sendError(400, "Invalid request received (malformed JSON?)");
         }
-        
-        
-    }
-    
-    private void addAction(HttpServletRequest request, Payout p) throws IOException {
-        Integer personId = Integer.parseInt(request.getParameter("person_id"));
-        
-        PayoutService.getInstance().addForPersonById(p, personId);
-        
-        json.put("success", true);
     }
 
-    private Payout getObjectFromRequest(HttpServletRequest request, ActionType tip) throws IOException {
-        Payout p = new Payout();
+    private void editAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JSONObject responseJson = new JSONObject();
         
-        Gson gson = GsonWrapper.getGson();
+        try {
+            Payout payout = PayoutService.getInstance().editEntityFromRequest(req);
         
-        PayoutBean bean = new PayoutBean();
-        
-        BufferedReader br = new BufferedReader(request.getReader());
-        
-        bean = gson.fromJson(br.readLine(), PayoutBean.class);
-        
-        Person person = PersonService.getInstance().findById(bean.getPerson_id());
-        
-        if (bean.getId() != null) {
-            p = PayoutService.getInstance().findById(bean.getId());
+            Gson gson = GsonWrapper.getGson();
+
+            String output = gson.toJson(payout, Payout.class);
+
+            resp.getOutputStream().print(output);
+        } catch (IOException ex) {
+            resp.sendError(500, "Unknown error occurred (IOException)");
         }
-        
-        p.setAmount(bean.getAmount());
-        p.setDate(bean.getDate());
-        p.setType(bean.getType());
-        p.setDescription(bean.getDescription());
-        
-        p.setPersonId(person);
-        
-        return p;
     }
 
-    private void editAction(HttpServletRequest request, Payout p) {
-        PayoutService.getInstance().edit(p);
-        
-        json.put("success", true);
-    }
-    
-    private void deleteAction(HttpServletRequest request) {
-        Integer id = Integer.parseInt(request.getParameter("id"));
-        
-        PayoutService.getInstance().deleteById(id);
-        
-        json.put("success", true);
-    }
-    
-    private class PayoutBean {
-        @Expose
-        private double amount;
-        
-        @Expose
-        private Integer id;
-        
-        @Expose
-        private Date date;
-        
-        @Expose
-        private String description;
-        
-        @Expose
-        private String type;
-        
-        @Expose
-        private Integer person_id;
+    private void deleteAction(HttpServletRequest req, HttpServletResponse resp) throws IOException {        
+        try {
+            PayoutService.getInstance().removeEntityFromRequest(req);
 
-        public double getAmount() {
-            return amount;
+            resp.getOutputStream().print(new JSONObject("{success:true}").toString());
+        } catch (IOException ex) {
+            resp.sendError(500, "Unknown error occurred (IOException)");
         }
-
-        public Integer getId() {
-            return id;
-        }
-
-        public Date getDate() {
-            return date;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public Integer getPerson_id() {
-            return person_id;
-        }
-
-        public String getType() {
-            return type;
-        }
-        
-        
     }
 }

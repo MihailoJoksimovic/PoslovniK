@@ -157,6 +157,7 @@ Poslovnik.PayoutTableView = Poslovnik.AbstractView.extend({
         
         var successFn = function() {
             self.showSuccess("Payment has been saved successfully!");
+            self.collection.reset();
             self.collection.fetch();
         };
 
