@@ -3,10 +3,17 @@
     <div class="col-lg-4"></div>
     <div class="col-lg-4 form-group" id="form-group">
         <form class="form">
-            <h2>Please Log In in order to access the Application</h2>
+            <h2>Please Log In</h2>
+            
+            <p id="wrong-credentials" class="text-danger" style="display: none;">Wrong credentials provided.</p>
 
             <input id="email" class="form-control input-lg" type="email" placeholder="@ Username/Email address" />
+            <br/>
             <input id="password" class="form-control input-lg" type="password" placeholder="Password" />
+            <br/>
+            <a href="#">Register</a> | 
+            <a href="#">Forgot Password</a>
+            <br/>
             <button type="button" class="btn btn-lg btn-primary" id="log-in-btn">Log In</button>
         </form>
     </div>

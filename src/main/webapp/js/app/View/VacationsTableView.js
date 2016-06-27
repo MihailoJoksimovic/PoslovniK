@@ -140,6 +140,8 @@ Poslovnik.VacationsTableView = Poslovnik.AbstractView.extend({
         this.collection.remove(model);
             
         $(row).remove();
+        
+        this.showSuccess("Entry has been removed successfully!");
 
     },
     

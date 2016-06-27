@@ -42,6 +42,7 @@ Poslovnik.Login = Backbone.View.extend({
         }
         
         this.$el.find('#form-group').addClass('has-error');
+        this.$el.find('#wrong-credentials').show();
     }
    
 });

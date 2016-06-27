@@ -28,13 +28,15 @@ Poslovnik.PayoutTableView = Poslovnik.AbstractView.extend({
     },
     
     subRender: function() {
-       if (this.collection.length === 0) {
-           return;
-       }
-       
        var self = this;
        
        var tbody = this.$el.find('tbody');
+        
+       if (this.collection.length === 0) {
+           $(tbody).html("<tr><td colspan='10'>No data</td></tr>");
+           
+           return;
+       }
        
        var userIsModeratorOrAdmin = Poslovnik.Person.hasModeratorOrAdminPrivileges();
        
@@ -120,6 +122,8 @@ Poslovnik.PayoutTableView = Poslovnik.AbstractView.extend({
         this.collection.remove(model);
             
         $(row).remove();
+        
+        this.showSuccess("Entry has been removed successfully!");
 
     },
     
