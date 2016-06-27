@@ -6,6 +6,7 @@
 package com.poslovnik.model.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import javax.ejb.NoSuchEntityException;
@@ -13,6 +14,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,9 +41,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")})
 public class Person implements Serializable {
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId", orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId", orphanRemoval=true, fetch=FetchType.EAGER)
     private Collection<Vacation> vacationCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId", orphanRemoval=true, fetch=FetchType.EAGER)
     private Collection<Payout> payoutCollection;
     private static final long serialVersionUID = 1L;
     @Id
@@ -213,6 +215,10 @@ public class Person implements Serializable {
 
     @XmlTransient
     public Collection<Payout> getPayoutCollection() {
+//        if (payoutCollection == null) {
+//            payoutCollection = new ArrayList<Payout>();
+//        }
+
         return payoutCollection;
     }
 
@@ -237,6 +243,10 @@ public class Person implements Serializable {
 
     @XmlTransient
     public Collection<Vacation> getVacationCollection() {
+//        if (vacationCollection == null) {
+//            vacationCollection = new ArrayList<Vacation>();
+//        }
+
         return vacationCollection;
     }
 

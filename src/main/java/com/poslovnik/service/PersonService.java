@@ -11,6 +11,7 @@ import com.poslovnik.model.dao.PersonDAO;
 import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
 import com.poslovnik.model.data.Vacation;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 /**
@@ -19,9 +20,7 @@ import javax.persistence.EntityManager;
  */
 public class PersonService {
     private static final PersonService instance = new PersonService();
-    
-    private EntityManager em;
-    
+        
     private PersonService() {
         
     }
@@ -31,25 +30,51 @@ public class PersonService {
     }
     
     public Person findById(Integer id) {
-        return PersonDAO.getInstance().findById(getEntityManager(), id);
+        Person p = null;
+        
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        try {
+            p = em.find(Person.class, id);
+        } finally {
+            em.close();
+        }
+
+        return p;
     }
     
     public List<Person> findAll() {
-        return PersonDAO.getInstance().findAll(getEntityManager());
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        List<Person> persons = new ArrayList<>();
+        
+        try {
+            persons = PersonDAO.getInstance().findAll(em);
+        } finally {
+            em.close();
+        }
+        
+        return persons;
+        
     }
     
     public void add(Person p) throws ValidationException {
         validate(p);
         
-        if (!getEntityManager().getTransaction().isActive()) {
-            getEntityManager().getTransaction().begin();
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        try {
+            em.getTransaction().begin();
+
+            PersonDAO.getInstance().add(em, p);
+
+            em.getTransaction().commit();
+        } finally {
+            em.close();
         }
-        
-        PersonDAO.getInstance().add(em, p);
-        
-        getEntityManager().getTransaction().commit();
+
     }
-    
+        
     public void addPayout(Person p, Payout payout) {
         
         if (!getEntityManager().getTransaction().isActive()) {
@@ -66,23 +91,33 @@ public class PersonService {
     public void edit(Person p) throws ValidationException {
         validate(p);
         
-        if (!getEntityManager().getTransaction().isActive()) {
-            getEntityManager().getTransaction().begin();
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        try {
+            em.getTransaction().begin();
+
+            PersonDAO.getInstance().edit(em, p);
+            
+            em.getTransaction().commit();
+        } finally {
+            em.close();
         }
-        
-        PersonDAO.getInstance().edit(em, p);
-        
-        getEntityManager().getTransaction().commit();
     }
     
-    public void delete(Person p) {
-        if (!getEntityManager().getTransaction().isActive()) {
-            getEntityManager().getTransaction().begin();
+    public void deleteById(Integer id) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        try {
+            em.getTransaction().begin();
+            
+            Person p = em.find(Person.class, id);
+            
+            em.remove(p);
+
+            em.getTransaction().commit();
+        } finally {
+            em.close();
         }
-        
-        PersonDAO.getInstance().delete(em, p);
-        
-        getEntityManager().getTransaction().commit();
     }
     
     private void validate(Person p) throws ValidationException {
@@ -90,17 +125,9 @@ public class PersonService {
     }
     
     private EntityManager getEntityManager() {
-        if (em instanceof EntityManager) {
-            return em;
-        }
-        
-        em = EntityManagerWrapper.getEntityManager();
+        EntityManager em = EntityManagerWrapper.getEntityManager();
         
         return em;
-    }
-
-    public void setEm(EntityManager em) {
-        this.em = em;
     }
 
     public void addVacation(Person person, Vacation v) {

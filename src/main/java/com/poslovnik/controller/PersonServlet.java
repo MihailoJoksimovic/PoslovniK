@@ -43,7 +43,7 @@ import org.json.JSONObject;
  * @author mixa
  */
 public class PersonServlet extends HttpServlet {
-    JSONObject json = new JSONObject();
+    JSONObject json;
   
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -59,6 +59,8 @@ public class PersonServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter("action");
         ActionType tip = ActionType.getForAction(action);
+        
+        json = new JSONObject();
         
         switch (tip) {
             case LIST: {
@@ -83,7 +85,7 @@ public class PersonServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+        json = new JSONObject();
         
         String action = request.getParameter("action");
         ActionType tip = ActionType.getForAction(action);
@@ -92,7 +94,7 @@ public class PersonServlet extends HttpServlet {
         
         switch (tip) {
             case DELETE: {
-                deleteAction(request, response, p);
+                deleteAction(request, response);
                 break;
             }
             case ADD:
@@ -155,10 +157,8 @@ public class PersonServlet extends HttpServlet {
         }
     }
     
-    private void deleteAction(HttpServletRequest request, HttpServletResponse response, Person p) throws IOException {
-        PersonService ps = PersonService.getInstance();
-        
-        ps.delete(p);
+    private void deleteAction(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        PersonService.getInstance().deleteById(Integer.parseInt(request.getParameter("id")));
             
         json.put("success", true);
     }
