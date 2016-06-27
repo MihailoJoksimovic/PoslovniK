@@ -188,6 +188,19 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
         
         if (model.get('new')) {
             var url = 'person?action=add';
+            
+            // Check for duplicates
+            var duplicates = this.personCollection.where({
+                email: model.get('email')
+            });
+            
+            if (duplicates.length >= 2) {
+                this.showError("Person with that email ("+model.get('email')+") already exists!");
+                
+                return;
+            }
+            
+            
         } else {
             var url = 'person?action=edit&id='+model.get('id');
         }
@@ -217,7 +230,7 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
                     self.showError("User with that email address already exists!");
                     break;
                 case 400:
-                    self.showError("Some fields are not field! Please make sure to fill in all fields.");
+                    self.showError("Please fill in all fields.");
                     break;
                 default:
                     self.showError("An unknown error has occurred ("+response.status+").");
@@ -311,15 +324,15 @@ Poslovnik.AdminDashboard = Backbone.View.extend({
     
     showSuccess: function(text) {
         this.hideAllAlerts();
-        this.$el.find('.alert-success').html(text).removeClass('hidden');
+        this.$el.find('.alert-success').html(text).show();
     },
     
     showError: function(text) {
         this.hideAllAlerts();
-        this.$el.find('.alert-danger').html(text).removeClass('hidden');
+        this.$el.find('.alert-danger').html(text).show();
     },
     
     hideAllAlerts: function() {
-        this.$el.find('.alert').addClass('hidden');
+        this.$el.find('.alert').hide();
     }
 });
