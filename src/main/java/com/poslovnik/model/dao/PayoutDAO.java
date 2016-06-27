@@ -7,7 +7,10 @@ package com.poslovnik.model.dao;
 
 import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
+import com.poslovnik.model.data.Vacation;
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  *
@@ -23,6 +26,16 @@ public class PayoutDAO {
         return instance;
     }
     
+    public void add(EntityManager em, Payout p) {
+        em.persist(p);
+    }
+    
+    public List<Payout> findAllForPerson (EntityManager em, Person p) {
+        Query query = em.createQuery("SELECT p FROM Payout p WHERE p.personId = :person_id");
+        query.setParameter("person_id", p);
+        return query.getResultList();
+    }
+    
     public void edit(EntityManager em, Payout p) {
         Payout merged = em.merge(p);
 
@@ -30,8 +43,6 @@ public class PayoutDAO {
     }
     
     public void delete(EntityManager em, Payout p) {
-        Payout merged = em.merge(p);
-        
-        em.remove(merged);
+        em.remove(p);
     }
 }

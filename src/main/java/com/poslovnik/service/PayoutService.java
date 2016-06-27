@@ -9,6 +9,7 @@ import com.poslovnik.model.dao.EntityManagerWrapper;
 import com.poslovnik.model.dao.PayoutDAO;
 import com.poslovnik.model.data.Payout;
 import com.poslovnik.model.data.Person;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -31,13 +32,58 @@ public class PayoutService implements CrudServiceInterface<Payout>{
 
     @Override
     public Payout findById(Integer id) {
-        return em.find(Payout.class, id);
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        Payout p = null;
+        
+        try {
+            p = em.find(Payout.class, id);
+        } finally {
+            em.close();
+        }
+        
+        return p;
     }
    
 
     @Override
     public List<Payout> findAll() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public List<Payout> findAllForPerson(Person person) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        List<Payout> payouts = new ArrayList<>();
+        
+        try {
+            payouts = PayoutDAO.getInstance().findAllForPerson(em, person);
+        } finally {
+            em.close();
+        }
+        
+        return payouts;
+    }
+    
+    
+    public void addForPersonById(Payout payout, Integer personId)
+    {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        try {
+            em.getTransaction().begin();
+            
+            Person person = PersonService.getInstance().findById(personId);
+            
+            payout.setPersonId(person);
+            
+            PayoutDAO.getInstance().add(em, payout);
+            
+            em.getTransaction().commit();
+            
+//            person.getPayoutCollection().add(payout);
+        } finally {
+            em.close();
+        }
     }
 
     @Override
@@ -52,32 +98,55 @@ public class PayoutService implements CrudServiceInterface<Payout>{
 
     @Override
     public void edit(Payout p) {
-        if (!em.getTransaction().isActive()) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        try {
             em.getTransaction().begin();
+            
+            PayoutDAO.getInstance().edit(em, p);
+        
+            em.getTransaction().commit();
+        } finally {
+            em.close();
         }
         
-        PayoutDAO.getInstance().edit(em, p);
         
-        em.getTransaction().commit();
     }
 
     @Override
     public void delete(Payout p) {
-        if (!em.getTransaction().isActive()) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
+        
+        try {
             em.getTransaction().begin();
+            
+            Payout managedPayout = em.find(Payout.class, p.getId());
+
+            PayoutDAO.getInstance().delete(em, managedPayout);
+
+            em.getTransaction().commit();
+        } finally {
+            em.close();
         }
         
-        Person person = p.getPersonId();
+    } 
+    
+    public void deleteById(Integer id) {
+        EntityManager em = EntityManagerWrapper.getEntityManager();
         
-        // Remove it from the Person's collection
-        Payout managedPayout = person.getPayoutById(p.getId());
-        
-        person.getPayoutCollection().remove(managedPayout);
-        
-        // And remove it from DB
-        PayoutDAO.getInstance().delete(em, p);
-        
-        em.getTransaction().commit();
+        try {
+            em.getTransaction().begin();
+            
+            Payout p = em.find(Payout.class, id);
+            
+            p.getPersonId().getPayoutCollection().remove(p);
+            
+            em.remove(p);
+
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
     
     

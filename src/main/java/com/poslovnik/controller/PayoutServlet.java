@@ -64,7 +64,7 @@ public class PayoutServlet extends HttpServlet {
         Payout p = new Payout();
         
         if (tip != tip.DELETE) {
-            p = getObjectFromRequest(request);
+            p = getObjectFromRequest(request, tip);
         }
 
         switch (tip) {
@@ -102,32 +102,32 @@ public class PayoutServlet extends HttpServlet {
             if (p == null) {
                 throw new NoSuchPersonException();
             }
+            
+            Collection<Payout> payouts = PayoutService.getInstance().findAllForPerson(p);
+        
+            Gson gson = GsonWrapper.getGson();
+
+            String payuotsJsonArray = gson.toJson(payouts);
+
+            response.getOutputStream().print(payuotsJsonArray);
         } catch (NumberFormatException | NoSuchPersonException ex) {
             response.sendError(400, "Bad request - missing/invalid person ID");
             
             return;
         }
         
-        Collection<Payout> payouts = p.getPayoutCollection();
         
-        Gson gson = GsonWrapper.getGson();
-        
-        String payuotsJsonArray = gson.toJson(payouts);
-        
-        response.getOutputStream().print(payuotsJsonArray);
     }
     
     private void addAction(HttpServletRequest request, Payout p) throws IOException {
         Integer personId = Integer.parseInt(request.getParameter("person_id"));
         
-        Person person = PersonService.getInstance().findById(personId);
-        
-        PersonService.getInstance().addPayout(person, p);
+        PayoutService.getInstance().addForPersonById(p, personId);
         
         json.put("success", true);
     }
 
-    private Payout getObjectFromRequest(HttpServletRequest request) throws IOException {
+    private Payout getObjectFromRequest(HttpServletRequest request, ActionType tip) throws IOException {
         Payout p = new Payout();
         
         Gson gson = GsonWrapper.getGson();
@@ -141,7 +141,7 @@ public class PayoutServlet extends HttpServlet {
         Person person = PersonService.getInstance().findById(bean.getPerson_id());
         
         if (bean.getId() != null) {
-            p = person.getPayoutById(bean.getId());
+            p = PayoutService.getInstance().findById(bean.getId());
         }
         
         p.setAmount(bean.getAmount());
@@ -163,9 +163,7 @@ public class PayoutServlet extends HttpServlet {
     private void deleteAction(HttpServletRequest request) {
         Integer id = Integer.parseInt(request.getParameter("id"));
         
-        Payout p = PayoutService.getInstance().findById(id);
-        
-        PayoutService.getInstance().delete(p);
+        PayoutService.getInstance().deleteById(id);
         
         json.put("success", true);
     }
